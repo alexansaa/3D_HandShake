@@ -1,1 +1,67 @@
 # 3D_HandShake
+
+Objetivos y actividades:
+- Click Event
+    - Obtencion de evento click en programa que ejecuta impresion en consola
+    - Obtencion de evento click izquierdo y derecho junto con arrastre que ejecuta impresion en consola
+    - Obtencion de evento click sobre un boton de la GUI
+    - Algoritmo para deteccion de un plano en evento click
+- Manipular sistema de coordenadas
+    - Implementacion de sistema de coordenadas. Conceptualizacion e implementacion de medidas
+    - Cambio de perspectiva del sistema de coordenadas; cambio por zoom, cambio por rotacion
+    - Obtencion de coordenadas por medio de evento click e impresion en consola del valor de coordenada
+    - Obtencion de conjunto de coordenadas en evento click y arraste e impresion en consola del arreglo de coordenadas
+- Herramienta rotacion de ambiente 3D sobre un punto pivote
+    - Implementacion de rotacion de camara mediante herramienta de click y arrastre
+    - Asignacion de coordenadas a un punto pivote
+    - Cambio de perspectiva (centro de giro) por cambio de coordenadas de punto pivote.
+- EDA para manipular coordenadas
+    - Estructura de datos para obtener coordenada en evento click
+    - Estructura de datos para obtener un arreglo de coordenadas en evento click y arraste
+    - Estructura de datos para obtener un conjunto de coordenadas pertenecientes a un objeto (tambien como resultado de una union de objetos)
+    - Algoritmo de obtencion de coordenadas en click
+    - Algoritmo de obtencion de conjunto de coordenadas en click y arraste
+    - Algoritmo para obtener coordenadas de un objeto
+    - Algoritmo para unir dos objetos es uno solo
+- Implementacion de interfaz grafica para el usuario GUI
+    - Agregar botones a las herramientas de pintura
+    - Agregar botones de colores
+    - Agregar botones de efectos
+    - Implementacion de botores de acceso a herramienta de rastreo
+    - Herramientas de creacion de objetos
+    - Herramienta de union de objetos selecionados, creando un nuevo volumen
+    - Herramienta de union de objetos que se intersecan
+    - Herramienta de corte de objetos
+- Herramienta de corte de objetos
+    - Conceptualizacion de un plano de corte con relacion al pivote de giro del objeto selecionado
+    - Implementacion de division del objeto selecionado considerando el plano de division conceptual
+    - Implementacion de distincion de color y efecto del plano de corte conceptualizado
+- Herramienta Rastreo para conseguir cerrar una figura con un punto cercano
+    - Implementacion de esfera de proximidad al rededor de coordenada arbitraria
+    - Algoritmo para deteccion de coordenadas cercanas al puntero
+    - Algoritmo para configuracion de herramienta (definir parametros de funcionamiento)
+- Construccion de figuras partiendo de una EDA de coordenadas
+    - Denegacion de construccion de puntos unitarios, excepto en la union con otra figura
+    - Construccion de lineas con 2 coordenadas
+    - Construccion de planos con 3 coordenadas
+    - Construccion de volumenes con un arreglo de coordenadas
+    - Construccion de planos con una linea y un punto
+    - Construccion de volumenes con una linea y dos o mas coordenadas (conjunto de coordenadas)
+    - Construccion de volumenes con un plano y uno o mas coordenadas (conjunto de coordenadas)
+    - Construccion de volumenes con un volumen y uno o mas coordenadas (conjunto de coordenadas)
+    - Logica de cierre de objeto: cuando se hace un arreglo de coordenadas y se clickea algun punto perteneciente al arreglo, se considera ese punto el punto incial y final de un plano de varios lados, y se descartan los lados anteriores a ese punto en la creacion del plano. Si no se seleciona ningun punto del arreglo, la figura en creacion se considera un volumen.
+    - Implementacion de cambio de coordenada de pivote dentro del espacio de una figura
+- Agregar colores y efectos a figuras
+    - Algoritmo para deteccion de cara correcta plano en evento click para agregar color o efecto
+    - Implementacion de paleta de colores
+    - Implementacion de efectos sobre los colores agregados
+    - Logica de union de objetos: cuando se unen dos objetos con colores y efectos, cada cara del conjunto final mantiene sus colores y efectos.
+- Interseccion de figuras, procedimiento e implementacion
+    - Algoritmo para habilitar la traslacion de figuras sobre el espacio
+    - Algoritmo para habilitar la rotacion de figuras sobre el espacio sobre un punto pivote definido sobre el objeto
+    - Algoritmo para union de dos figuras selecionadas
+    - Algoritmo para union de dos figuras que se intersecan: deteccion y union
+- Exportacion e implementacion de objetos 3D al ambiente del programa
+    - Implementacion de procedimiento para conceptualizar el objeto dentro de un entorno de varios objetos
+    - Implementacion de exportacion de objeto como un archivo de sistema en carpeta selecionada
+    - Implementacion de importacion de objeto al ambiente del programa
