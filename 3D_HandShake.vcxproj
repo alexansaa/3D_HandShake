@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Instalables\glad\src\glad.c" />
     <ClCompile Include="..\bk\imgui_impl_glfw.cpp" />
     <ClCompile Include="..\bk\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\bk\imgui_test.cpp" />
@@ -27,6 +26,7 @@
     <ClCompile Include="..\bk\mainTest.cpp" />
     <ClCompile Include="..\bk\main_window.cpp" />
     <ClCompile Include="..\bk\Tools.cpp" />
+    <ClCompile Include="glad.c" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
