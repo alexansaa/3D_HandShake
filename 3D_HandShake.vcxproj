@@ -20,10 +20,37 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Instalables\glad\src\glad.c" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\bk\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\bk\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\bk\imgui_test.cpp" />
+    <ClCompile Include="..\bk\main.cpp" />
+    <ClCompile Include="..\bk\mainTest.cpp" />
+    <ClCompile Include="..\bk\main_window.cpp" />
+    <ClCompile Include="..\bk\Tools.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_tables.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h" />
+    <ClInclude Include="..\bk\imconfig.h" />
+    <ClInclude Include="..\bk\imgui.h" />
+    <ClInclude Include="..\bk\imgui_impl_glfw.h" />
+    <ClInclude Include="..\bk\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\bk\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\bk\main.h" />
+    <ClInclude Include="..\bk\mainTest.h" />
+    <ClInclude Include="..\bk\main_window.h" />
+    <ClInclude Include="..\bk\Tools.h" />
+    <ClInclude Include="glad.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bk\imgui.ini" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -78,20 +105,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
