@@ -19,38 +19,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\bk\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\bk\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\bk\imgui_test.cpp" />
-    <ClCompile Include="..\bk\main.cpp" />
-    <ClCompile Include="..\bk\mainTest.cpp" />
-    <ClCompile Include="..\bk\main_window.cpp" />
-    <ClCompile Include="..\bk\Tools.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_glfw.cpp" />
+    <ClCompile Include="imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui_tables.cpp" />
+    <ClCompile Include="imgui_test.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainTest.cpp" />
+    <ClCompile Include="main_window.cpp" />
+    <ClCompile Include="Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\bk\imconfig.h" />
-    <ClInclude Include="..\bk\imgui.h" />
-    <ClInclude Include="..\bk\imgui_impl_glfw.h" />
-    <ClInclude Include="..\bk\imgui_impl_opengl3.h" />
-    <ClInclude Include="..\bk\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="..\bk\main.h" />
-    <ClInclude Include="..\bk\mainTest.h" />
-    <ClInclude Include="..\bk\main_window.h" />
-    <ClInclude Include="..\bk\Tools.h" />
     <ClInclude Include="glad.h" />
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_glfw.h" />
+    <ClInclude Include="imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui_impl_opengl3_loader.h" />
     <ClInclude Include="imgui_internal.h" />
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="main_window.h" />
+    <ClInclude Include="Tools.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\bk\imgui.ini" />
+    <None Include="imgui.ini" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
