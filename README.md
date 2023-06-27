@@ -4,13 +4,10 @@ Objetivos y actividades:
 - Click Event
     - Obtencion de evento click en programa que ejecuta impresion en consola
     - Obtencion de evento click izquierdo y derecho junto con arrastre que ejecuta impresion en consola
-    - Obtencion de evento click sobre un boton de la GUI
-    - Algoritmo para deteccion de un plano en evento click
 - Manipular sistema de coordenadas
-    - Implementacion de sistema de coordenadas. Conceptualizacion e implementacion de medidas
-    - Cambio de perspectiva del sistema de coordenadas; cambio por zoom, cambio por rotacion
-    - Obtencion de coordenadas por medio de evento click e impresion en consola del valor de coordenada
-    - Obtencion de conjunto de coordenadas en evento click y arraste e impresion en consola del arreglo de coordenadas
+    - Cambio de perspectiva del sistema de coordenadas; cambio por zoom, cambio por rotacion y camara
+    - Algoritmo para habilitar la rotacion de figuras sobre el espacio sobre un punto pivote definido sobre el objeto
+    - Algoritmo para habilitar la traslacion de figuras sobre el espacio
 - Herramienta rotacion de ambiente 3D sobre un punto pivote
     - Implementacion de rotacion de camara mediante herramienta de click y arrastre
     - Asignacion de coordenadas a un punto pivote
@@ -22,20 +19,13 @@ Objetivos y actividades:
     - Algoritmo de obtencion de coordenadas en click
     - Algoritmo de obtencion de conjunto de coordenadas en click y arraste
     - Algoritmo para obtener coordenadas de un objeto
-    - Algoritmo para unir dos objetos es uno solo
 - Implementacion de interfaz grafica para el usuario GUI
     - Agregar botones a las herramientas de pintura
     - Agregar botones de colores
     - Agregar botones de efectos
-    - Implementacion de botores de acceso a herramienta de rastreo
-    - Herramientas de creacion de objetos
-    - Herramienta de union de objetos selecionados, creando un nuevo volumen
-    - Herramienta de union de objetos que se intersecan
-    - Herramienta de corte de objetos
-- Herramienta de corte de objetos
-    - Conceptualizacion de un plano de corte con relacion al pivote de giro del objeto selecionado
-    - Implementacion de division del objeto selecionado considerando el plano de division conceptual
-    - Implementacion de distincion de color y efecto del plano de corte conceptualizado
+    - Agregar botones de formas
+    - Agregar botones de modelado
+    - Implementacion de botores de acceso a herramienta de rastreo (metadata)
 - Herramienta Rastreo para conseguir cerrar una figura con un punto cercano
     - Implementacion de esfera de proximidad al rededor de coordenada arbitraria
     - Algoritmo para deteccion de coordenadas cercanas al puntero
@@ -55,12 +45,6 @@ Objetivos y actividades:
     - Algoritmo para deteccion de cara correcta plano en evento click para agregar color o efecto
     - Implementacion de paleta de colores
     - Implementacion de efectos sobre los colores agregados
-    - Logica de union de objetos: cuando se unen dos objetos con colores y efectos, cada cara del conjunto final mantiene sus colores y efectos.
-- Interseccion de figuras, procedimiento e implementacion
-    - Algoritmo para habilitar la traslacion de figuras sobre el espacio
-    - Algoritmo para habilitar la rotacion de figuras sobre el espacio sobre un punto pivote definido sobre el objeto
-    - Algoritmo para union de dos figuras selecionadas
-    - Algoritmo para union de dos figuras que se intersecan: deteccion y union
 - Exportacion e implementacion de objetos 3D al ambiente del programa
     - Implementacion de procedimiento para conceptualizar el objeto dentro de un entorno de varios objetos
     - Implementacion de exportacion de objeto como un archivo de sistema en carpeta selecionada
