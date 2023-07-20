@@ -23,7 +23,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="shader_m.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="7.4.camera.fs" />
+    <None Include="7.4.camera.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -78,20 +83,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\Libraries;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
