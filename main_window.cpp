@@ -98,7 +98,6 @@ namespace MainWindow {
     }
 
     void ShowTest() {
-        
         float vertices[] = {
             -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
              0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -225,12 +224,38 @@ namespace MainWindow {
         }
         stbi_image_free(data);
 
+        // definimos shader
+        //Shader ourShader("text.vs", "test.fs");
+        Shader ourShader("7.4.camera.vs", "7.4.camera.fs");
+        ourShader.use();
+        ourShader.setInt("texture1", 0);
+        ourShader.setInt("texture2", 1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+
+        //DrawScene();
+        // pass projection matrix to shader (note that in this case it could change every frame)
+        glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        ourShader.setMat4("projection", projection);
+
+        // camera/view transformation
+        glm::mat4 view = glm::mat4(1.0f);
+        view = prog_state::camera.GetViewMatrix();
+        ourShader.setMat4("view", view);
 
         // Create a texture for rendering
         unsigned int texture;
         glGenTextures(1, &texture);
+        glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //set texture filtering paramteres
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -240,126 +265,11 @@ namespace MainWindow {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 
-        // check si el framebuffer esta completo
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << "ERROR::FRAMEBUFFER::Framebuffer is not complete!" << std::endl;
-        }
-        else
-        {
-            std::cout << "TODO BIEN" << std::endl;
-        }
-
-        // definimos shader
-        //Shader ourShader("text.vs", "test.fs");
-        Shader ourShader("7.4.camera.vs", "7.4.camera.fs");
-        ourShader.use();
-        ourShader.setInt("texture1", 0);
-        ourShader.setInt("texture2", 1);
-
-        // first pass
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT); // we're not using the stencil buffer now
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glEnable(GL_DEPTH_TEST);
-
-        //DrawScene();
-        // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
-
-        // camera/view transformation
-        glm::mat4 view = prog_state::camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
-
-        // render boxes
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        glBindVertexArray(VAO);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-        glDisable(GL_DEPTH_TEST);
-        
-        //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
-        //para renderizar en dear imGUI debes llamar al comando Draw Image
-        ImGui::BeginChild("GameRender");
-
-        //ImVec2 wsize = ImGui::GetContentRegionAvail();
-        ImVec2 wsize = ImGui::GetWindowSize();
-
-        ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
-
-        ImGui::EndChild();
-
-    }
-
-    void showTestStart() {
-        float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
-        };
-
-        unsigned int VBO;
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        // definimos shader
-        Shader ourShader = Shader("text.vs", "test.fs");
-
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        unsigned int VAO;
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);       
-
-        //------------------------------------------------------------------
-        //frame buffer object
-        unsigned int fbo;
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-        //texture
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        // set the texture wrapping parameters
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-        //Render buffer Object
+        //Create render buffer object
         unsigned int rbo;
         glGenRenderbuffers(1, &rbo);
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-        //attach the renderbuffer object to the depth and stencil attachment of the framebuffer
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
         // check si el framebuffer esta completo
@@ -370,5 +280,48 @@ namespace MainWindow {
         {
             std::cout << "TODO BIEN" << std::endl;
         }
+
+        glBindVertexArray(VAO);
+
+        // first pass
+        glEnable(GL_DEPTH_TEST);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+        
+        // render boxes
+        
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            
+            // calculate the model matrix for each object and pass it to shader before drawing
+            glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            ourShader.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        
+        //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
+        ImGui::BeginChild("GameRender");
+
+        //ImVec2 wsize = ImGui::GetContentRegionAvail();
+        ImVec2 wsize = ImGui::GetWindowSize();
+
+        ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+
+        ImGui::EndChild();
+
+        
+
     }
 }
