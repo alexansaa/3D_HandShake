@@ -8,10 +8,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "main.h"
 #include <shader_m.h>
 #include <camera.h>
-
+#include <stdio.h>
 #include <iostream>
+
+#include "main_window.h"
+#include "Tools.h"
+#include "Libraries/imgui/imgui.h"
+#include "Libraries/imgui/imgui_impl_glfw.h"
+#include "Libraries/imgui/imgui_impl_opengl3.h"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -29,7 +37,7 @@ const unsigned int SCR_HEIGHT = 600;
 float cameraX = 0.0f;
 float cameraY = 0.0f;
 float cameraZ = 15.0f;
-Camera camera(glm::vec3(cameraX, cameraY, cameraZ));
+Camera prog_state::camera(glm::vec3(cameraX, cameraY, cameraZ));
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -44,6 +52,7 @@ int main()
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
+    const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -64,13 +73,29 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
-    //
     glfwSetMouseButtonCallback(window, mouse_click_callback);
-    //
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // Our state
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -83,6 +108,9 @@ int main()
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+
+    // configura variables de prueba para renderizar en Dear Imgui
+    //MainWindow::showTestStart();
 
     // build and compile our shader zprogram
     // ------------------------------------
@@ -237,44 +265,29 @@ int main()
         // -----
         processInput(window);
 
-        // render
-        // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        MainWindow::ShowMainWindow();
 
-        // activate shader
-        ourShader.use();
+        //Renderizado ventanas de modelos
+        GuiTools::ShowModelWindow(&GuiTools::show_window_model);
+        GuiTools::ShowColorWindow(&GuiTools::show_window_color);
+        GuiTools::ShowEffectsWindow(&GuiTools::show_window_effects);
+        GuiTools::ShowShapeWindow(&GuiTools::show_window_shape);
+        GuiTools::ShowAboutUsWindow(&GuiTools::show_window_AboutUs);
 
-        // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
+        // Rendering
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        // camera/view transformation
-        glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
-
-        // render boxes
-        glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -286,6 +299,8 @@ int main()
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
+    // Cleanup
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
@@ -298,17 +313,17 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        prog_state::camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        prog_state::camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        prog_state::camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        prog_state::camera.ProcessKeyboard(RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(UP, deltaTime);
+        prog_state::camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(DOWN, deltaTime);
+        prog_state::camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -329,7 +344,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
         float deltaX = prevXpos - xposIn;
         float deltaY = yposIn - prevYpos;
 
-        camera.ProcessMouseMovement(deltaX, deltaY);
+        prog_state::camera.ProcessMouseMovement(deltaX, deltaY);
 
         prevXpos = xposIn;
         prevYpos = yposIn;
@@ -342,14 +357,14 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
         // construimos la direccion del rayo en espacio de vista
         glm::vec4 rayClipSpace(nomrX, normY, -1.0f, 1.0f);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         //glm::mat4 projectionMatrix = camera.GetProjectionMatrix();
         glm::mat4 projectionMatrix = projection;
         glm::vec4 rayViewSpace = glm::inverse(projectionMatrix) * rayClipSpace;
         rayViewSpace = glm::vec4(rayViewSpace.x, rayViewSpace.y, -1.0f, 0.0f);
 
         // tranforma la direccion del rayo a espacio de mundo
-        glm::mat4 viewMatrix = camera.GetViewMatrix();
+        glm::mat4 viewMatrix = prog_state::camera.GetViewMatrix();
         glm::vec4 rayWorldSpace = glm::inverse(viewMatrix) * rayViewSpace;
         glm::vec3 rayDirection(rayWorldSpace.x, rayWorldSpace.y, rayWorldSpace.z);
         rayDirection = glm::normalize(rayDirection);
@@ -357,7 +372,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
         // Calculate the intersection point in world space
         float distanceFromCamera = 10.0f; // Adjust this distance as needed
         //glm::vec3 cameraPosition = glm::vec3(cameraX, cameraY, cameraZ);
-        glm::vec3 cameraPosition = camera.Position;
+        glm::vec3 cameraPosition = prog_state::camera.Position;
         glm::vec3 intersectionPoint = cameraPosition + rayDirection * distanceFromCamera;
 
         // Output the intersection point coordinates
@@ -369,7 +384,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
+    prog_state::camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
 // alex: cuando algun boton de mouse es presionado, esta funcion se llama
