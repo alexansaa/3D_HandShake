@@ -20,10 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Instalables\glad\src\glad.c" />
+    <ClCompile Include="Linking\Include\imgui\imgui.cpp" />
+    <ClCompile Include="Linking\Include\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Linking\Include\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Linking\Include\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Linking\Include\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Linking\Include\imgui\imgui_test.cpp" />
+    <ClCompile Include="Linking\Include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Linking\Include\tools\Tools.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_widow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="main_window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -78,20 +88,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Linking\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Linking\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Linking\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Linking\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Linking\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Linking\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\GLFW_OpenGL\Libraries;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\GLFW_OpenGL\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\Linking\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Linking\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -103,7 +113,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GLFW\glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,7 +130,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GLFW\glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -133,7 +143,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GLFW\glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,7 +160,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GLFW\glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
