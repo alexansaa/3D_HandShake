@@ -18,9 +18,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-
-
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -36,6 +33,12 @@ float cameraX = 0.0f;
 float cameraY = 0.0f;
 float cameraZ = 15.0f;
 Camera prog_state::camera(glm::vec3(cameraX, cameraY, cameraZ));
+
+// 3d model shader
+Shader prog_state::shader;
+
+// sample model (solo ejemplo)
+Model prog_state::model;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -102,6 +105,8 @@ int main()
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    prog_state::shader = Shader("./Shaders/1.model_loading.vs", "./Shaders/1.model_loading.fs");
+    prog_state::model = Model("modelo3d/Wolf_obj.obj");
 
     // render loop
     // -----------
@@ -189,7 +194,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------

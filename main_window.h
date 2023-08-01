@@ -7,7 +7,7 @@ namespace MainWindow {
 	extern bool opt_enable_grid;
 	void ShowCanvas();
 	void ShowTest();
-	void showTestStart();
+	void ShowImport();
 	//extern Shader ourShader;
 	//extern unsigned int fbo;
 	extern unsigned int VAO;

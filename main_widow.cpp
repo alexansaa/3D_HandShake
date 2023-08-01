@@ -4,6 +4,7 @@
 #include <stb/stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "main_window.h"
 #include <tools/Tools.h>
@@ -12,6 +13,7 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <math.h>
+#include "model.h"
 
 #include <shader/shader_m.h>
 #include <camera/camera.h>
@@ -44,7 +46,8 @@ namespace MainWindow {
             GuiTools::BarraHerramientas();
             //ImGui::Text("Texto de ejemplo para la ventana");
             //ShowCanvas();
-            ShowTest();
+            //ShowTest();
+            ShowImport();
         }
         ImGui::End();
     }
@@ -324,5 +327,82 @@ namespace MainWindow {
 
 
 
+    }
+
+    void ShowImport() {
+        // Create a texture for rendering
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //set texture filtering paramteres
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Create a framebuffer object (FBO)
+        unsigned int framebuffer;
+        glGenFramebuffers(1, &framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+        //Create render buffer object
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+        // check si el framebuffer esta completo
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "ERROR::FRAMEBUFFER::Framebuffer is not complete!" << std::endl;
+        }
+        else
+        {
+            std::cout << "TODO BIEN" << std::endl;
+        }
+
+        // build and compile shaders
+        // -------------------------
+        //Shader ourShader("Shaders/1.model_loading.vs", "Shaders/1.model_loading.fs");
+
+        // load models
+        // -----------
+        //Model ourModel("modelo3d/Wolf_obj.obj");
+
+        // don't forget to enable shader before setting uniforms
+        //ourShader.use();
+        prog_state::shader.use();
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = prog_state::camera.GetViewMatrix();
+        prog_state::shader.setMat4("projection", projection);
+        prog_state::shader.setMat4("view", view);
+
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        prog_state::shader.setMat4("model", model);
+        //ourModel.Draw(ourShader);
+        prog_state::model.DrawIntoTexture(prog_state::shader, texture, framebuffer, rbo);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
+        ImGui::BeginChild("GameRender");
+
+        //ImVec2 wsize = ImGui::GetContentRegionAvail();
+        ImVec2 wsize = ImGui::GetWindowSize();
+
+        ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+
+        ImGui::EndChild();
     }
 }
