@@ -43,14 +43,16 @@ public:
     vector<Vertex>       vertices;
     vector<unsigned int> indices;
     vector<Texture>      textures;
+    aiColor3D    color;
     unsigned int VAO;
 
     // constructor
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, aiColor3D color)
     {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
+        this->color = color;
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
@@ -123,12 +125,29 @@ public:
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 
+        // aplico color especifico de la mesh
+        //ai_real r_color = color.r;
+        //ai_real g_color = color.g;
+        //ai_real b_color = color.b;
+
+        //glm::mat3 myColor(r_color, g_color, b_color);
+        glm::vec3 myColor(0.5f, 0.3f, 0.5f);
+        //aiColor3D myColor = aiColor3D(0.5f,0.3f,0.5f);
+        shader.setVec3("uColor", myColor);
+
         // draw mesh
         glActiveTexture(GL_TEXTURE3);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glBindVertexArray(VAO);
+
+        // color de fondo de la pantalla 2d
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // elemento dibujado
         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+
         glBindVertexArray(0);
 
         // always good practice to set everything back to defaults once configured.

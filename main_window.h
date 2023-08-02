@@ -8,6 +8,8 @@ namespace MainWindow {
 	void ShowCanvas();
 	void ShowTest();
 	void ShowImport();
+	void ShowDraw();
+	void ExportCustom();
 	//extern Shader ourShader;
 	//extern unsigned int fbo;
 	extern unsigned int VAO;

@@ -19,6 +19,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <stdio.h>
 using namespace std;
 
 // se define estatico para que se pueda definir en el main en vez de definir en el loop de renderizacion
@@ -60,6 +61,53 @@ public:
     {
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].DrawIntoTexture(shader, texture, framebuffer, rbo);
+    }
+
+    // Constituye una malla dados vertices de triangulos, indices, texturas (calcula las normales al plano)
+    //void loadMesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+    void loadMesh(vector<Vertex> vertices, vector<Texture> textures, aiColor3D color)
+    {
+        // desacoplamos variables en caso de que se encuentren acopladas
+        textures_loaded.clear();
+        meshes.clear();
+        directory = "";
+         
+        // loop through each 3 vertex
+        // un vertice es una coordenada en 3D
+        std::vector<unsigned int> index;
+        for (unsigned int i = 0; i < vertices.size(); i++)
+        {
+            // first triangle vertex
+            std::string xPos1 = std::to_string(vertices[i].Position.x);
+            std::string yPos1 = std::to_string(vertices[i].Position.y);
+            std::string zPos1 = std::to_string(vertices[i].Position.z);
+            // second triangle vertex
+            std::string xPos2 = std::to_string(vertices[i + 1].Position.x);
+            std::string yPos2 = std::to_string(vertices[i + 1].Position.y);
+            std::string zPos2 = std::to_string(vertices[i + 1].Position.z);
+            // third triangle vertex
+            std::string xPos3 = std::to_string(vertices[i + 2].Position.x);
+            std::string yPos3 = std::to_string(vertices[i + 2].Position.y);
+            std::string zPos3 = std::to_string(vertices[i + 2].Position.z);
+
+            // print
+            std::string result = "(" + xPos1 + ", " + yPos1 + ", " + zPos1 + "), " +
+                "(" + xPos2 + ", " + yPos2 + ", " + zPos2 + "), " +
+                "(" + xPos3 + ", " + yPos3 + ", " + zPos3 + "), ";
+
+            std::cout << "points: " << result << std::endl;
+
+            index.push_back(i);
+            index.push_back(i+1);
+            index.push_back(i+2);
+
+            // next
+            i = i + 2;
+
+            Mesh mesh = Mesh(vertices, index, textures,color);
+
+
+        }
     }
 
 private:
@@ -107,6 +155,7 @@ private:
         vector<Vertex> vertices;
         vector<unsigned int> indices;
         vector<Texture> textures;
+        aiColor3D color;
 
         // walk through each of the mesh's vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -181,8 +230,12 @@ private:
         std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
+        // procesamos colores
+        //"AI_MATKEY_COLOR_DIFFUSE" -> "$clr.diffuse"
+        color = loadMaterialColors(material, "$clr.diffuse");
+
         // return a mesh object created from the extracted mesh data
-        return Mesh(vertices, indices, textures);
+        return Mesh(vertices, indices, textures, color);
     }
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
@@ -190,6 +243,7 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
     {
         vector<Texture> textures;
+        
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
@@ -216,6 +270,21 @@ private:
             }
         }
         return textures;
+    }
+
+    //  checks if there are colors of a given type and loads the colors if they're not loaded yet.
+    // the required info is returned as a aiColor
+    aiColor3D loadMaterialColors(aiMaterial* mat, const char* type)
+    {
+        //std::cout << mat->GetName().C_Str() << std::endl;
+        aiColor3D color;
+        //aiReturn ret = mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+        aiReturn ret = mat->Get(type, 0,0,color);
+        //std::cout << "Result code - load material color: " + ret << std::endl;
+        //std:string ans = std::to_string(color.b) + " " + std::to_string(color.g) + " " + std::to_string(color.r);
+        //std::cout << ans << std::endl;
+
+        return color;
     }
 };
 
