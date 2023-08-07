@@ -51,8 +51,8 @@ namespace MainWindow {
             GuiTools::BarraHerramientas();
             //ImGui::Text("Texto de ejemplo para la ventana");
             //ShowCanvas();
-            ShowTest();
-            //ShowImport();
+            //ShowTest();
+            ShowImport();
             //ShowDraw();
             //ExportCustom();
         }
@@ -531,7 +531,7 @@ namespace MainWindow {
         // texture 1
         // ---------
         unsigned int texture1;
-        
+
         glGenTextures(1, &texture1);
         glBindTexture(GL_TEXTURE_2D, texture1);
         // set the texture wrapping parameters
@@ -566,7 +566,7 @@ namespace MainWindow {
         Model myModel = Model();
         myModel.loadMesh(myVertices, textures, myColor);
 
-        
+
 
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
@@ -612,7 +612,7 @@ namespace MainWindow {
         // a valid material is needed, even if its empty
 
         aiMaterial* material = new aiMaterial();            // deleted: Version.cpp:155
-        aiColor3D color = aiColor3D(0.3f,0.5f,0.3f);
+        aiColor3D color = aiColor3D(0.3f, 0.5f, 0.3f);
         material->AddProperty<aiColor3D>(&color, 1, AI_MATKEY_COLOR_DIFFUSE);
 
         // a root node with the mesh list is needed; if you have multiple meshes, this must match.
@@ -637,7 +637,7 @@ namespace MainWindow {
             cerr << mAiExporter.GetErrorString() << endl;
             std::cout << mAiExporter.GetErrorString() << std::endl;
         }
-            
+
 
         // deleting the scene will also take care of the vertices, faces, meshes, materials, nodes, etc.
 

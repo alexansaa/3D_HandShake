@@ -161,7 +161,7 @@ int main()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window); 
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }

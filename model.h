@@ -27,7 +27,7 @@ static unsigned int TextureFromFile(const char* path, const string& directory, b
 
 class Model
 {
-public:   
+public:
     // model data 
     vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
     vector<Mesh>    meshes;
@@ -71,7 +71,7 @@ public:
         textures_loaded.clear();
         meshes.clear();
         directory = "";
-         
+
         // loop through each 3 vertex
         // un vertice es una coordenada en 3D
         std::vector<unsigned int> index;
@@ -98,13 +98,13 @@ public:
             std::cout << "points: " << result << std::endl;
 
             index.push_back(i);
-            index.push_back(i+1);
-            index.push_back(i+2);
+            index.push_back(i + 1);
+            index.push_back(i + 2);
 
             // next
             i = i + 2;
 
-            Mesh mesh = Mesh(vertices, index, textures,color);
+            Mesh mesh = Mesh(vertices, index, textures, color);
 
 
         }
@@ -243,7 +243,7 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
     {
         vector<Texture> textures;
-        
+
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
@@ -279,7 +279,7 @@ private:
         //std::cout << mat->GetName().C_Str() << std::endl;
         aiColor3D color;
         //aiReturn ret = mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-        aiReturn ret = mat->Get(type, 0,0,color);
+        aiReturn ret = mat->Get(type, 0, 0, color);
         //std::cout << "Result code - load material color: " + ret << std::endl;
         //std:string ans = std::to_string(color.b) + " " + std::to_string(color.g) + " " + std::to_string(color.r);
         //std::cout << ans << std::endl;

@@ -130,8 +130,13 @@ public:
         //ai_real g_color = color.g;
         //ai_real b_color = color.b;
 
+        float r_color = static_cast<float>(color.r);
+        float g_color = static_cast<float>(color.g);
+        float b_color = static_cast<float>(color.b);
+
         //glm::mat3 myColor(r_color, g_color, b_color);
-        glm::vec3 myColor(0.5f, 0.3f, 0.5f);
+        //glm::vec3 myColor(0.5f, 0.3f, 0.5f);
+        glm::vec3 myColor(r_color, g_color, b_color);
         //aiColor3D myColor = aiColor3D(0.5f,0.3f,0.5f);
         shader.setVec3("uColor", myColor);
 
