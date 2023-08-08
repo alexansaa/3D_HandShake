@@ -48,9 +48,9 @@ namespace MainWindow {
             GuiTools::BarraHerramientas();
             //ImGui::Text("Texto de ejemplo para la ventana");
             //ShowCanvas();
-            ShowTest();
+            //ShowTest();
             //ShowImport();
-            //ShowDraw();
+            ShowDraw();
             //ExportCustom();
         }
         ImGui::End();
@@ -351,6 +351,9 @@ namespace MainWindow {
         //glDeleteFramebuffers(GL_FRAMEBUFFER, &framebuffer);
         glDeleteRenderbuffers(1, &rbo);
 
+        // always good practice to set everything back to defaults once configured.
+        glBindVertexArray(0);
+        glActiveTexture(GL_TEXTURE0);
     }
 
     void ShowImport() {
@@ -472,18 +475,6 @@ namespace MainWindow {
             std::cout << "TODO BIEN" << std::endl;
         }
 
-        // build and compile shaders
-        // -------------------------
-        //Shader ourShader("Shaders/1.model_loading.vs", "Shaders/1.model_loading.fs");
-
-        // load models
-        // -----------
-        //Model ourModel("modelo3d/Wolf_obj.obj");
-
-        // don't forget to enable shader before setting uniforms
-        //ourShader.use();
-        //prog_state::shader.use();
-
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)prog_input::SCR_WIDTH / (float)prog_input::SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = prog_state::camera.GetViewMatrix();
@@ -497,33 +488,28 @@ namespace MainWindow {
         prog_state::renderShader.setMat4("model", model);
 
         // definimos nuestros vertices
-        //ourModel.Draw(ourShader);
-        //prog_state::model.DrawIntoTexture(prog_state::renderShader, texture, framebuffer, rbo);
-        vector<Vertex> myVertices;
+        vector<SimpleVertex> myVertices;
 
-        Vertex v1;
+        SimpleVertex v1;
         glm::vec3 vec1;
         vec1.x = -0.5f;
         vec1.y = -0.5f;
         vec1.z = -0.5f;
         v1.Position = vec1;
-        myVertices.push_back(v1);
 
-        Vertex v2;
+        SimpleVertex v2;
         glm::vec3 vec2;
         vec2.x = 0.5f;
         vec2.y = -0.5f;
         vec2.z = -0.5f;
         v2.Position = vec2;
-        myVertices.push_back(v2);
 
-        Vertex v3;
+        SimpleVertex v3;
         glm::vec3 vec3;
         vec3.x = 0.5f;
         vec3.y = 0.5f;
         vec3.z = -0.5f;
         v3.Position = vec3;
-        myVertices.push_back(v3);
 
         // definimos texture coordinates
         glm::vec2 vert1;
@@ -541,10 +527,14 @@ namespace MainWindow {
         vert3.y = 1.0f;
         v3.TexCoords = vert3;
 
+        myVertices.push_back(v1);
+        myVertices.push_back(v2);
+        myVertices.push_back(v3);
+
         // definimos un color
         aiColor3D myColor = aiColor3D(0.3f, 0.5f, 0.3f);
 
-        // definimos una textura
+        // definimos unas textura
         // texture 1
         // ---------
         unsigned int texture1;
@@ -561,7 +551,7 @@ namespace MainWindow {
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
         //unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
-        unsigned char* data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
+        unsigned char* data = stbi_load("./resources/textures/container.jpg", &width, &height, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -569,21 +559,60 @@ namespace MainWindow {
         }
         else
         {
-            std::cout << "Failed to load texture" << std::endl;
+            std::cout << "Failed to load texture container" << std::endl;
+        }
+        stbi_image_free(data);
+
+        // texture 2
+        // ---------
+        unsigned int texture2;
+
+        glGenTextures(1, &texture2);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // load image, create texture and generate mipmaps
+        //int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+        //unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
+        data = stbi_load("./resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            std::cout << "Failed to load texture awsomeface" << std::endl;
         }
         stbi_image_free(data);
 
         vector<Texture> textures;
-        Texture myTxture;
-        myTxture.id = texture1;
-        myTxture.type = "texture_normal";
-        myTxture.path = "resources/textures/container.jpg";
-        textures.push_back(myTxture);
+        Texture myTxture1;
+        myTxture1.id = texture1;
+        myTxture1.type = "texture";
+        myTxture1.path = "resources/textures/container.jpg";
+        textures.push_back(myTxture1);
+
+        Texture myTxture2;
+        myTxture2.id = texture2;
+        myTxture2.type = "texture";
+        myTxture2.path = "resources/textures/awesomeface.jpg";
+        textures.push_back(myTxture2);
 
         Model myModel = Model();
         myModel.loadMesh(myVertices, textures, myColor);
 
-        
+        float textureMixRate = 0.2f;
+
+        bool useTexture = false;
+        bool useColor = true;
+
+        myModel.DrawIntoTexture(prog_state::renderShader, texture, framebuffer, rbo, textureMixRate, useTexture, useColor);
 
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
@@ -599,6 +628,18 @@ namespace MainWindow {
         ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
 
         ImGui::EndChild();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDeleteTextures(1, &texture1);
+        glDeleteTextures(1, &texture2);
+        glDeleteRenderbuffers(1, &rbo);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0);
     }
 
     void ExportCustom() {
