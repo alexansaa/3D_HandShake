@@ -106,8 +106,8 @@ int main()
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     prog_state::shader = Shader("./Shaders/1.model_loading.vs", "./Shaders/1.model_loading.fs");
-    //prog_state::model = Model("modelo3d/Wolf_obj.obj");
-    prog_state::model = Model("modelo3d/triangle.obj");
+    prog_state::model = Model("modelo3d/Wolf_obj.obj");
+    //prog_state::model = Model("modelo3d/triangle.obj");
 
     // render loop
     // -----------
