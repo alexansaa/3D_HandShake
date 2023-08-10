@@ -7,8 +7,8 @@
 namespace prog_state {
 	extern Camera camera;
 	extern Shader renderShader;
-	extern vector<Mesh> stateMeshes;
-	extern Mesh tmpMesh;
+	extern vector<Model> stateModels;
+	extern Model tmpModel;
 	extern const char* colorVS;
 	extern const char* colorFS;
 	extern const char* textureVS;

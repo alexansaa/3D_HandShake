@@ -31,6 +31,7 @@
     <ClCompile Include="Linking\Include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_window.cpp" />
+    <ClCompile Include="Renderizador.cpp" />
     <ClCompile Include="Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +42,7 @@
     <ClInclude Include="main_window.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="Renderizador.h" />
     <ClInclude Include="Tools.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

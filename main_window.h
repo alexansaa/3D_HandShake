@@ -10,6 +10,9 @@ namespace MainWindow {
 	void ShowImport();
 	void ShowDraw();
 	void ExportCustom();
+	void AddMeshToStateFull();
+	void ImportMeshToStateFull();
+	void RenderTexture(unsigned int texture);
 	//extern Shader ourShader;
 	//extern unsigned int fbo;
 	extern unsigned int VAO;

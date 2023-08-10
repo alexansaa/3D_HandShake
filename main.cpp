@@ -5,19 +5,13 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
-
 #include <shader/shader.h>
 
 #include "main.h"
-
 #include "inputAdd.h"
-
 #include "camera.h"
-
 #include "main_window.h"
-
 #include "Tools.h"
-
 #include "impExp.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -36,6 +30,9 @@ Shader prog_state::renderShader;
 
 // importer object
 Model import_export::model;
+
+// model state
+vector<Model> prog_state::stateModels;
 
 // constants defintion
 extern const char* prog_state::colorVS = "./Shaders/1.model_loading.vs";
@@ -102,10 +99,8 @@ int main()
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    prog_state::renderShader = Shader(prog_state::textColorVS, prog_state::textColorFS);
-    //prog_state::renderShader = Shader(prog_state::textureVS, prog_state::textureFS);
-    //prog_state::model = Model("modelo3d/Wolf_obj.obj");
-    //import_export::model = Model("modelo3d/triangle.obj");
+    //prog_state::renderShader = Shader(prog_state::textColorVS, prog_state::textColorFS);
+    prog_state::renderShader = Shader(prog_state::colorVS, prog_state::colorFS);
 
     // render loop
     // -----------

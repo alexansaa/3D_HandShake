@@ -62,8 +62,11 @@ public:
     // 2d enviroments interoperability
     void DrawIntoTexture(Shader& shader, unsigned int& texture, unsigned int& framebuffer, unsigned int& rbo, float textureMixRate, bool useTexture, bool useColor)
     {
-        for (unsigned int i = 0; i < meshes.size(); i++)
+        std::cout << "Meshes size: " + std::to_string(meshes.size()) << std::endl;
+        for (unsigned int i = 0; i < meshes.size(); i++) {
+            std::cout << "Meshes pass: " + std::to_string(i) << std::endl;
             meshes[i].DrawIntoTexture(shader, texture, framebuffer, rbo, textureMixRate, useTexture, useColor);
+        }
     }
 
     // Constituye una malla dados vertices de triangulos, indices, texturas (calcula las normales al plano)

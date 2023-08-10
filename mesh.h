@@ -116,24 +116,23 @@ public:
 
     // render the mesh into a texture, for 2d compatibility
     void DrawIntoTexture(Shader& shader, unsigned int& texture, unsigned int& framebuffer, unsigned int& rbo, float textureMixRate,bool useTexure,bool useColor)
-    {
-        // preparar la renderizacion
-        shader.use();
-        
+    {       
         // bind appropriate textures
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
         unsigned int normalNr = 1;
         unsigned int heightNr = 1;
         unsigned int customNr = 1;
-        //std::cout << "Number of textures: " + std::to_string(textures.size()) << std::endl;
-        for (unsigned int i = 0; i < textures.size(); i++)
+
+        std::cout << "Number of textures: " + std::to_string(textures.size()) << std::endl;
+        unsigned int i = 0;
+        for (i = 0; i < textures.size(); i++)
         {
             glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
             // retrieve texture number (the N in diffuse_textureN)
             string number;
             string name = textures[i].type;
-            //std::cout << "Texture type: " + textures[i].type << std::endl;
+            std::cout << "Texture type: " + textures[i].type << std::endl;
             if (name == "texture_diffuse")
                 number = std::to_string(diffuseNr++);
             else if (name == "texture_specular")
@@ -146,24 +145,30 @@ public:
                 number = std::to_string(customNr++);
 
             // now set the sampler to the correct texture unit
-            //std::cout << "Texture name: " + name + number + std::to_string(customNr - 2) << std::endl;
+            std::cout << "Texture name: " + name + " " + number << std::endl;
 
             // later code
-            //glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            //// and finally bind the texture
+            glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+            // and finally bind the texture
+            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+
+            //// newer code
+            //shader.setInt(name + number, customNr - 2);
+            //if (customNr - 2 == 0)
+            //{
+            //    glActiveTexture(GL_TEXTURE0);
+            //}
+            //else {
+            //    glActiveTexture(GL_TEXTURE1);
+            //}
             //glBindTexture(GL_TEXTURE_2D, textures[i].id);
 
-            // newer code
-            shader.setInt(name + number, customNr - 2);
-            if (customNr - 2 == 0)
-            {
-                glActiveTexture(GL_TEXTURE0);
-            }
-            else {
-                glActiveTexture(GL_TEXTURE1);
-            }
-            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            // even newer code
+            //glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
+
+        // preparar la renderizacion
+        shader.use();
 
         // aplico color especifico de la mesh
         float r_color = static_cast<float>(color.r);
@@ -174,13 +179,16 @@ public:
 
         glm::vec4 myColor(r_color, g_color, b_color, 1.0f);
 
-        shader.setBool("useTexture", useTexure);
-        shader.setBool("useColor", useColor);
-        shader.setVec4("uColor", myColor);
-        shader.setFloat("textureMixFactor", textureMixRate);
+        //shader.setBool("useTexture", useTexure);
+        //shader.setBool("useColor", useColor);
+        //shader.setVec4("uColor", myColor);
+        //shader.setFloat("textureMixFactor", textureMixRate);
 
+        // configuramos buffers para renderizado
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        
         // draw mesh
-        glActiveTexture(GL_TEXTURE3);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 
@@ -188,16 +196,20 @@ public:
         glEnable(GL_DEPTH_TEST);
         
         // color de fondo de la pantalla 2d
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // elemento dibujado
         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
-
         glBindVertexArray(0);
 
         // always good practice to set everything back to defaults once configured.
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
         glActiveTexture(GL_TEXTURE0);
+
     }
 
 
