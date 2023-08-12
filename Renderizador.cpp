@@ -9,12 +9,12 @@ unsigned int render_state::RenderModelsVector(vector<Model> stateModel) {
     // Create a texture for rendering
     unsigned int texture;
     glGenTextures(1, &texture);
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     //set texture filtering paramteres
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -41,10 +41,8 @@ unsigned int render_state::RenderModelsVector(vector<Model> stateModel) {
         std::cout << "TODO BIEN" << std::endl;
     }
 
-    // liberamos los buffers para que el flujo de renderizacion de otros modulos pueda darse con normalidad
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    // don't forget to enable shader before setting uniforms
+    prog_state::renderShader.use();
 
     // view/projection transformations
     glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)prog_input::SCR_WIDTH / (float)prog_input::SCR_HEIGHT, 0.1f, 100.0f);
@@ -58,18 +56,15 @@ unsigned int render_state::RenderModelsVector(vector<Model> stateModel) {
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
     prog_state::renderShader.setMat4("model", model);
 
-    //std::cout << "State models: " + std::to_string(stateModel.size()) << std::endl;
+    glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    // default configuration
-    float textureMixRate = 0.8f;
-
-    bool useTexture = true;
-    bool useColor = true;
-
-    for (int i = 0; i < stateModel.size(); i++) {
-        stateModel[i].DrawIntoTexture(prog_state::renderShader, texture, framebuffer, rbo, textureMixRate, useTexture, useColor);
-        //std::cout << "Model number: " + std::to_string(i) << std::endl;
+    // renderizamos modelos sobre textura
+    for (int i = 0; i < prog_state::stateModels.size(); i++) {
+        prog_state::stateModels[i].DrawIntoTextureCustom(prog_state::renderShader);
     }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 
     return texture;
 }

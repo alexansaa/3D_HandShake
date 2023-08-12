@@ -2,6 +2,6 @@
 #include "model.h"
 namespace import_export {
 	extern Model model;
-	void Importation(const char* modelObjPath);
+	void Importation(const char* modelObjPath, bool processCustom);
 }
 #endif

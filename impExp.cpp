@@ -1,11 +1,7 @@
 #include "impExp.h"
 
-void import_export::Importation(const char* modelObjPath) {
+void import_export::Importation(const char* modelObjPath, bool processCustom) {
 	// importacion del modelo desde un obj que tien un mtl
-	Model tmpModel(modelObjPath);
+	Model tmpModel(modelObjPath, processCustom);
 	import_export::model = tmpModel;
-
-	//vector<SimpleVertex> myVertices = import_export::model.meshes.size();
-	//vector<Texture> textures;
-	//aiColor3D myColor = aiColor3D();
 }

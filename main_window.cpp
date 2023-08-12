@@ -49,22 +49,26 @@ namespace MainWindow {
         {
             GuiTools::BarraHerramientas();
             //ImGui::Text("Texto de ejemplo para la ventana");
-            //ShowCanvas();         // muestra el canvas de Dear Imgui
-            //ShowTest();           // usa vertices hardcoded para poder renderizar imagenes mediante texturas en el ambiente Dear Imgui.
-            ImportMeshToStateFull();
-            ShowImport();         // no funcional en esta arquitectura, probar en otra branch
-            //ShowDraw();           // muestra como renderizar en el ambiente 2D de Dear Imgui usando la nueva arquitectura
-            //ExportCustom();         // exporta una escena .obj junto con su .mtl a la carpeta de modelos 3d del programa. Usa Mesh para configurar la escena
+            //ShowCanvas();                 // muestra el canvas de Dear Imgui
+            //ShowTest();                   // usa vertices hardcoded para poder renderizar objetos con 2 diferentes texturas, sobre una textura requerida para renderizar en el 2D de Dear Imgui. Ocupa el shader textColor
+            // --------------
+            //ImportMeshToStateFull("Low-Poly Plant_", false);      // se requiere para hacer el trabajo de importacion a vector<Model> variable de estado de programa
+            //ShowImport();                 // muestra la imagen renderizada importada del path al modelo obj con su respectivo mtl. Ocupa el Shader Color
+            // --------------
+            //ShowDraw();                   // muestra como renderizar en el ambiente 2D de Dear Imgui usando la nueva arquitectura. Con vertices customizados. Usa shader textcolor
+            //ExportCustom();               // exporta una escena .obj junto con su .mtl a la carpeta de modelos 3d del programa. Usa Mesh para configurar la escena. Usa shader textcolor
 
             // ejemplo que agrega un Modelo al vector de modelos del estado del programa para luego renderizar todos los modelos del vector de modelos
+            // usa shader textColor
             //AddMeshToStateFull();
             //unsigned int myTexture = render_state::RenderModelsVector(prog_state::stateModels);
             //RenderTexture(myTexture);
 
             // ejemplo que importa un modelo al vector de modelos del estado del programa para luego renderizar todos los modelos del vector de modelos
-            //ImportMeshToStateFull();
-            //unsigned int myTexture = render_state::RenderModelsVector(prog_state::stateModels);
-            //RenderTexture(myTexture);
+            // usa shader textColor
+            ImportMeshToStateFull("triangleplusone", true);
+            unsigned int myTexture = render_state::RenderModelsVector(prog_state::stateModels);
+            RenderTexture(myTexture);
 
         }
         ImGui::End();
@@ -374,12 +378,101 @@ namespace MainWindow {
         // Create a texture for rendering
         unsigned int texture;
         glGenTextures(1, &texture);
-        glActiveTexture(GL_TEXTURE0);
+        //glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
         // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //set texture filtering paramteres
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Create a framebuffer object (FBO)
+        unsigned int framebuffer;
+        glGenFramebuffers(1, &framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+        //Create render buffer object
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+        // check si el framebuffer esta completo
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "ERROR::FRAMEBUFFER::Framebuffer is not complete!" << std::endl;
+        }
+        else
+        {
+            std::cout << "TODO BIEN" << std::endl;
+        }
+
+        // don't forget to enable shader before setting uniforms
+        // para que este ejemplo funcione correctamente, se requiere de un shader que acepte especificamente el nombre de
+        // la textura que se pasa desde el modelo obj. Es por esa razon que un modelo obj siempre estara acompanado de un mtl y
+        // un shader en especifico que funcione bien para el proposito de renderizacion
+        // en este caso funciona bien con el render "colors" que corresponde al shader "1.model_loading"
+        // el cual acepta una textura y las variables correspondientes al renderizado de la camara
+        // este shader no es util para mezclar texturas, sino para renderizar mallas las cuales tengan una sola textura cada malla
+        prog_state::renderShader.use();
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)prog_input::SCR_WIDTH / (float)prog_input::SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = prog_state::camera.GetViewMatrix();
+        prog_state::renderShader.setMat4("projection", projection);
+        prog_state::renderShader.setMat4("view", view);
+
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        prog_state::renderShader.setMat4("model", model);
+
+        // Variables de renderizado
+        //float textureMixRate = 0.5f;
+        //bool useTexture = true;
+        //bool useColor = false;
+
+        glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // renderizamos en textura
+        import_export::model.DrawIntoTextureImport(prog_state::renderShader);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
+        ImGui::BeginChild("GameRender");
+
+        //ImVec2 wsize = ImGui::GetContentRegionAvail();
+        ImVec2 wsize = ImGui::GetWindowSize();
+
+        ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+
+        ImGui::EndChild();
+
+        //delete objects
+        //glDeleteTextures(1, &texture);
+        //glDeleteFramebuffers(1, &framebuffer);
+        //glDeleteRenderbuffers(1, &rbo);
+    }
+
+    void ShowDraw() {
+        // Create a texture for rendering
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        //glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        // set the texture wrapping parameters
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         //set texture filtering paramteres
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -421,82 +514,6 @@ namespace MainWindow {
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         prog_state::renderShader.setMat4("model", model);
 
-        // Variables de renderizado
-        float textureMixRate = 0.5f;
-        bool useTexture = true;
-        bool useColor = false;
-
-        // renderizamos en textura
-        import_export::model.DrawIntoTexture(prog_state::renderShader, texture, framebuffer, rbo, textureMixRate,useTexture,useColor);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
-        ImGui::BeginChild("GameRender");
-
-        //ImVec2 wsize = ImGui::GetContentRegionAvail();
-        ImVec2 wsize = ImGui::GetWindowSize();
-
-        ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
-
-        ImGui::EndChild();
-
-        //delete objects
-        //glDeleteTextures(1, &texture);
-        //glDeleteFramebuffers(1, &framebuffer);
-        //glDeleteRenderbuffers(1, &rbo);
-    }
-
-    void ShowDraw() {
-        // Create a texture for rendering
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        //set texture filtering paramteres
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        // Create a framebuffer object (FBO)
-        unsigned int framebuffer;
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-        //Create render buffer object
-        unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-        // check si el framebuffer esta completo
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << "ERROR::FRAMEBUFFER::Framebuffer is not complete!" << std::endl;
-        }
-        else
-        {
-            std::cout << "TODO BIEN" << std::endl;
-        }
-
-        // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(prog_state::camera.Zoom), (float)prog_input::SCR_WIDTH / (float)prog_input::SCR_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = prog_state::camera.GetViewMatrix();
-        prog_state::renderShader.setMat4("projection", projection);
-        prog_state::renderShader.setMat4("view", view);
-
-        // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        prog_state::renderShader.setMat4("model", model);
-
         // definimos nuestros vertices
         vector<SimpleVertex> myVertices;
 
@@ -521,113 +538,54 @@ namespace MainWindow {
         vec3.z = -0.5f;
         v3.Position = vec3;
 
-        // definimos texture coordinates
-        glm::vec2 vert1;
-        vert1.x = 0.0f;
-        vert1.y = 0.0f;
-        v1.TexCoords = vert1;
-
-        glm::vec2 vert2;
-        vert2.x = 1.0f;
-        vert2.y = 0.0f;
-        v2.TexCoords = vert2;
-
-        glm::vec2 vert3;
-        vert3.x = 1.0f;
-        vert3.y = 1.0f;
-        v3.TexCoords = vert3;
+        SimpleVertex v4;
+        glm::vec3 vec4;
+        vec4.x = 0.5f;
+        vec4.y = -0.5f;
+        vec4.z = -1.0f;
+        v4.Position = vec4;
 
         myVertices.push_back(v1);
         myVertices.push_back(v2);
         myVertices.push_back(v3);
+        myVertices.push_back(v4);
 
         // definimos un color
         aiColor3D myColor = aiColor3D(0.3f, 0.5f, 0.3f);
 
-        // definimos unas textura
-        // texture 1
-        // ---------
-        unsigned int texture1;
-        
-        glGenTextures(1, &texture1);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // load image, create texture and generate mipmaps
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-        //unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
-        unsigned char* data = stbi_load("./resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture container" << std::endl;
-        }
-        stbi_image_free(data);
-
-        // texture 2
-        // ---------
-        unsigned int texture2;
-
-        glGenTextures(1, &texture2);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // load image, create texture and generate mipmaps
-        //int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-        //unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
-        data = stbi_load("./resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture awsomeface" << std::endl;
-        }
-        stbi_image_free(data);
-
-        vector<Texture> textures;
-        Texture myTxture1;
-        myTxture1.id = texture1;
-        myTxture1.type = "texture";
-        myTxture1.path = "resources/textures/container.jpg";
-        textures.push_back(myTxture1);
-
-        Texture myTxture2;
-        myTxture2.id = texture2;
-        myTxture2.type = "texture";
-        myTxture2.path = "resources/textures/awesomeface.jpg";
-        textures.push_back(myTxture2);
+        // definimos indices de orden de renderizado
+        vector<unsigned int> myIndexes;
+        myIndexes.push_back(0);
+        myIndexes.push_back(1);
+        myIndexes.push_back(2);
+        // Con 3 vertices se puede crear 1 solo triangulo
+        // cuando agrego un vertice mas, se puede construir hasta 3 triangulos extras
+        // dependiendo de la configuracion, se va a crear uno u otro triangulo.
+        // aqui todas las posibilidades
+        myIndexes.push_back(1);
+        myIndexes.push_back(2);
+        myIndexes.push_back(3);
+        myIndexes.push_back(0);
+        myIndexes.push_back(1);
+        myIndexes.push_back(3);
+        // este ultimo triangulo puede ser descartado del dibujo comentando estas lineas
+        // es interesante que se agregen color a los vertices para que se pueda diferenciar entre
+        // una figura solida abierta y una cerrada
+        myIndexes.push_back(2);
+        myIndexes.push_back(0);
+        myIndexes.push_back(3);
 
         Model myModel = Model();
-        myModel.loadMesh(myVertices, textures, myColor);
+        myModel.pushMesh(myVertices, myColor, myIndexes);
 
-        float textureMixRate = 0.8f;
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+        glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        bool useTexture = true;
-        bool useColor = true;
-
-        //myModel.DrawIntoTexture(prog_state::renderShader, texture, framebuffer, rbo, textureMixRate, useTexture, useColor);
-
+        // renderizamos en textura
+        myModel.DrawIntoTextureCustom(prog_state::renderShader);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
         ImGui::BeginChild("GameRender");
@@ -638,78 +596,127 @@ namespace MainWindow {
         ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
 
         ImGui::EndChild();
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDeleteTextures(1, &texture1);
-        glDeleteTextures(1, &texture2);
-        glDeleteRenderbuffers(1, &rbo);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTexture(GL_TEXTURE0);
     }
 
     void ExportCustom() {
-        // create vertices and faces, then pack into an aiMesh
+        // definimos nuestros vertices
+        vector<SimpleVertex> myVertices;
 
-        aiVector3D* vertices = new aiVector3D[3]{          // deleted: mesh.h:758
-            { -1, -1, 0 },
-            { 0, 1, 0 },
-            { 1, -1, 0 }
-        };
+        SimpleVertex v1;
+        glm::vec3 vec1;
+        vec1.x = -0.5f;
+        vec1.y = -0.5f;
+        vec1.z = -0.5f;
+        v1.Position = vec1;
 
-        //aiVector3D* normal = new aiVector3D[1]{
-        //    {0,0,-1}
+        SimpleVertex v2;
+        glm::vec3 vec2;
+        vec2.x = 0.5f;
+        vec2.y = -0.5f;
+        vec2.z = -0.5f;
+        v2.Position = vec2;
+
+        SimpleVertex v3;
+        glm::vec3 vec3;
+        vec3.x = 0.5f;
+        vec3.y = 0.5f;
+        vec3.z = -0.5f;
+        v3.Position = vec3;
+
+        SimpleVertex v4;
+        glm::vec3 vec4;
+        vec4.x = 0.5f;
+        vec4.y = -0.5f;
+        vec4.z = -1.0f;
+        v4.Position = vec4;
+
+        myVertices.push_back(v1);
+        myVertices.push_back(v2);
+        myVertices.push_back(v3);
+        myVertices.push_back(v4);
+
+        // definimos un color
+        aiColor3D myColor = aiColor3D(0.3f, 0.5f, 0.3f);
+
+        // definimos indices de orden de renderizado
+        vector<unsigned int> myIndexes;
+        myIndexes.push_back(0);
+        myIndexes.push_back(1);
+        myIndexes.push_back(2);
+        myIndexes.push_back(1);
+        myIndexes.push_back(2);
+        myIndexes.push_back(3);
+        myIndexes.push_back(0);
+        myIndexes.push_back(1);
+        myIndexes.push_back(3);
+        //myIndexes.push_back(2);
+        //myIndexes.push_back(0);
+        //myIndexes.push_back(3);
+
+        Model myModel = Model();
+        myModel.pushMesh(myVertices, myColor, myIndexes);
+
+        aiScene myScene = myModel.GetExportScene();
+
+
+        //// --------------------------------------------------
+
+        //// create vertices and faces, then pack into an aiMesh
+
+        //aiVector3D* vertices = new aiVector3D[3]{          // deleted: mesh.h:758
+        //    { -1, -1, 0 },
+        //    { 0, 1, 0 },
+        //    { 1, -1, 0 }
         //};
 
-        aiFace* faces = new aiFace[1];                      // deleted: mesh.h:784
-        faces[0].mNumIndices = 3;
-        faces[0].mIndices = new unsigned [3] { 0, 1, 2 };    // deleted: mesh.h:149
+        ////aiVector3D* normal = new aiVector3D[1]{
+        ////    {0,0,-1}
+        ////};
 
-        aiMesh* mesh = new aiMesh();                        // deleted: Version.cpp:150
-        mesh->mNumVertices = 3;
-        mesh->mVertices = vertices;
-        mesh->mNumFaces = 1;
-        mesh->mFaces = faces;
-        mesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE; // workaround, issue #3778
-        mesh->mMaterialIndex = 0;
+        //aiFace* faces = new aiFace[1];                      // deleted: mesh.h:784
+        //faces[0].mNumIndices = 3;
+        //faces[0].mIndices = new unsigned [3] { 0, 1, 2 };    // deleted: mesh.h:149
 
-        // a valid material is needed, even if its empty
+        //aiMesh* mesh = new aiMesh();                        // deleted: Version.cpp:150
+        //mesh->mNumVertices = 3;
+        //mesh->mVertices = vertices;
+        //mesh->mNumFaces = 1;
+        //mesh->mFaces = faces;
+        //mesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE; // workaround, issue #3778
+        //mesh->mMaterialIndex = 0;
 
-        aiMaterial* material = new aiMaterial();            // deleted: Version.cpp:155
-        aiColor3D color = aiColor3D(0.3f,0.5f,0.3f);
-        material->AddProperty<aiColor3D>(&color, 1, AI_MATKEY_COLOR_DIFFUSE);
+        //// a valid material is needed, even if its empty
 
-        // a root node with the mesh list is needed; if you have multiple meshes, this must match.
+        //aiMaterial* material = new aiMaterial();            // deleted: Version.cpp:155
+        //aiColor3D color = aiColor3D(0.3f,0.5f,0.3f);
+        //material->AddProperty<aiColor3D>(&color, 1, AI_MATKEY_COLOR_DIFFUSE);
 
-        aiNode* root = new aiNode();                        // deleted: Version.cpp:143
-        root->mNumMeshes = 1;
-        root->mMeshes = new unsigned [1] { 0 };              // deleted: scene.cpp:77
+        //// a root node with the mesh list is needed; if you have multiple meshes, this must match.
 
-        // pack mesh(es), material, and root node into a new minimal aiScene
+        //aiNode* root = new aiNode();                        // deleted: Version.cpp:143
+        //root->mNumMeshes = 1;
+        //root->mMeshes = new unsigned [1] { 0 };              // deleted: scene.cpp:77
 
-        aiScene* out = new aiScene();                       // deleted: by us after use
-        out->mNumMeshes = 1;
-        out->mMeshes = new aiMesh * [1] { mesh };            // deleted: Version.cpp:151
-        out->mNumMaterials = 1;
-        out->mMaterials = new aiMaterial * [1] { material }; // deleted: Version.cpp:158
-        out->mRootNode = root;
-        out->mMetaData = new aiMetadata(); // workaround, issue #3781
+        //// pack mesh(es), material, and root node into a new minimal aiScene
+
+        //aiScene* out = new aiScene();                       // deleted: by us after use
+        //out->mNumMeshes = 1;
+        //out->mMeshes = new aiMesh * [1] { mesh };            // deleted: Version.cpp:151
+        //out->mNumMaterials = 1;
+        //out->mMaterials = new aiMaterial * [1] { material }; // deleted: Version.cpp:158
+        //out->mRootNode = root;
+        //out->mMetaData = new aiMetadata(); // workaround, issue #3781
 
         Assimp::Exporter mAiExporter;
 
-        if (mAiExporter.Export(out, "obj", "./modelo3d/triangle.obj") != AI_SUCCESS) {
+        if (mAiExporter.Export(&myScene, "obj", "./modelo3d/custom/triangleplusone.obj") != AI_SUCCESS) {
             cerr << mAiExporter.GetErrorString() << endl;
             std::cout << mAiExporter.GetErrorString() << std::endl;
         }
             
-
+        // in case of returnint the aiScene from another function, there should not be worries about dellocationg memmory as memory should me managed by c++
         // deleting the scene will also take care of the vertices, faces, meshes, materials, nodes, etc.
-
-        delete out;
+        //delete &myScene;
 
 
         //ExportProperties* properties = new ExportProperties;
@@ -745,101 +752,38 @@ namespace MainWindow {
         vec3.z = -0.5f;
         v3.Position = vec3;
 
-        // definimos texture coordinates
-        glm::vec2 vert1;
-        vert1.x = 0.0f;
-        vert1.y = 0.0f;
-        v1.TexCoords = vert1;
-
-        glm::vec2 vert2;
-        vert2.x = 1.0f;
-        vert2.y = 0.0f;
-        v2.TexCoords = vert2;
-
-        glm::vec2 vert3;
-        vert3.x = 1.0f;
-        vert3.y = 1.0f;
-        v3.TexCoords = vert3;
+        SimpleVertex v4;
+        glm::vec3 vec4;
+        vec4.x = 0.5f;
+        vec4.y = -0.5f;
+        vec4.z = -1.0f;
+        v4.Position = vec4;
 
         myVertices.push_back(v1);
         myVertices.push_back(v2);
         myVertices.push_back(v3);
+        myVertices.push_back(v4);
 
         // definimos un color
         aiColor3D myColor = aiColor3D(0.3f, 0.5f, 0.3f);
 
-        // definimos unas textura
-        // texture 1
-        // ---------
-        unsigned int texture1;
-
-        glGenTextures(1, &texture1);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // load image, create texture and generate mipmaps
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-        //unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
-        unsigned char* data = stbi_load("./resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture container" << std::endl;
-        }
-        stbi_image_free(data);
-
-        // texture 2
-        // ---------
-        unsigned int texture2;
-
-        glGenTextures(1, &texture2);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // load image, create texture and generate mipmaps
-        //int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-        //unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
-        data = stbi_load("./resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture awsomeface" << std::endl;
-        }
-        stbi_image_free(data);
-
-        vector<Texture> textures;
-        Texture myTxture1;
-        myTxture1.id = texture1;
-        myTxture1.type = "texture";
-        myTxture1.path = "resources/textures/container.jpg";
-        textures.push_back(myTxture1);
-
-        Texture myTxture2;
-        myTxture2.id = texture2;
-        myTxture2.type = "texture";
-        myTxture2.path = "resources/textures/awesomeface.jpg";
-        textures.push_back(myTxture2);
+        // definimos indices de orden de renderizado
+        vector<unsigned int> myIndexes;
+        myIndexes.push_back(0);
+        myIndexes.push_back(1);
+        myIndexes.push_back(2);
+        myIndexes.push_back(1);
+        myIndexes.push_back(2);
+        myIndexes.push_back(3);
+        myIndexes.push_back(0);
+        myIndexes.push_back(1);
+        myIndexes.push_back(3);
+        //myIndexes.push_back(2);
+        //myIndexes.push_back(0);
+        //myIndexes.push_back(3);
 
         Model myModel = Model();
-        myModel.loadMesh(myVertices, textures, myColor);
+        myModel.pushMesh(myVertices, myColor, myIndexes);
 
         if (prog_state::stateModels.size() < 1) {
             prog_state::stateModels.push_back(myModel);
@@ -853,9 +797,18 @@ namespace MainWindow {
         //bool useColor = true;
     }
 
-    void ImportMeshToStateFull() {
-        const char* myPath = "modelo3d/Low-Poly Plant_.obj";
-        import_export::Importation(myPath);
+    // dependiendo de donde esta el modelo, se debe cambiar basePath
+    void ImportMeshToStateFull(const char* modelName, bool processCustom) {
+        const char* basePath = "./modelo3d/custom/";
+        const char* modelExt = ".obj";
+        size_t totalPathLng = strlen(basePath) + strlen(modelName) + strlen(modelExt) + 1;
+        char* myPath = new char[totalPathLng];
+        strncpy_s(myPath, totalPathLng, basePath, totalPathLng - 1);
+        strncat_s(myPath, totalPathLng, modelName, totalPathLng - strlen(myPath) - 1);
+        strncat_s(myPath, totalPathLng, modelExt, totalPathLng - strlen(myPath));
+        std::cout << "Path: " << myPath << std::endl;
+
+        import_export::Importation(myPath, processCustom);
 
         if (prog_state::stateModels.size() < 1) {
             prog_state::stateModels.push_back(import_export::model);

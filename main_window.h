@@ -11,7 +11,7 @@ namespace MainWindow {
 	void ShowDraw();
 	void ExportCustom();
 	void AddMeshToStateFull();
-	void ImportMeshToStateFull();
+	void ImportMeshToStateFull(const char* modelName, bool processCustom);
 	void RenderTexture(unsigned int texture);
 	//extern Shader ourShader;
 	//extern unsigned int fbo;
