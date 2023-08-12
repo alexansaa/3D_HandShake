@@ -2,19 +2,52 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
+#include <shader/shader.h>
+
+#include "main.h"
+#include "inputAdd.h"
+#include "camera.h"
+#include "main_window.h"
+#include "Tools.h"
+#include "impExp.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+// camera
+float cameraX = 0.0f;
+float cameraY = 0.0f;
+float cameraZ = 15.0f;
+Camera prog_state::camera(glm::vec3(cameraX, cameraY, cameraZ));
+
+// shader
+Shader prog_state::renderShader;
+
+// importer object
+Model import_export::model;
+
+// model state
+vector<Model> prog_state::stateModels;
+
+// constants defintion
+extern const char* prog_state::colorVS = "./Shaders/1.model_loading.vs";
+extern const char* prog_state::colorFS = "./Shaders/1.model_loading.fs";
+extern const char* prog_state::textureVS = "./Shaders/7.4.camera.vs";
+extern const char* prog_state::textureFS = "./Shaders/7.4.camera.fs";
+extern const char* prog_state::textColorVS = "./Shaders/test.vs";
+extern const char* prog_state::textColorFS = "./Shaders/test.fs";
 
 int main()
 {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
+    const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -25,7 +58,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -34,6 +67,12 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, prog_input::mouse_callback);
+    glfwSetMouseButtonCallback(window, prog_input::mouse_click_callback);
+    glfwSetScrollCallback(window, prog_input::scroll_callback);
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -43,13 +82,63 @@ int main()
         return -1;
     }
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    //ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // Our state
+    //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    prog_state::renderShader = Shader(prog_state::textColorVS, prog_state::textColorFS);
+    //prog_state::renderShader = Shader(prog_state::colorVS, prog_state::colorFS);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        // per-frame time logic
+        // --------------------
+        float currentFrame = static_cast<float>(glfwGetTime());
+        prog_input::deltaTime = currentFrame - prog_input::lastFrame;
+        prog_input::lastFrame = currentFrame;
+
         // input
         // -----
-        processInput(window);
+        prog_input::processInput(window);
+
+        // Renderizamos Dear Imgui
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        MainWindow::ShowMainWindow();
+
+        //Renderizado ventanas de modelos
+        GuiTools::ShowModelWindow(&GuiTools::show_window_model);
+        GuiTools::ShowColorWindow(&GuiTools::show_window_color);
+        GuiTools::ShowEffectsWindow(&GuiTools::show_window_effects);
+        GuiTools::ShowShapeWindow(&GuiTools::show_window_shape);
+        GuiTools::ShowAboutUsWindow(&GuiTools::show_window_AboutUs);
+
+        // Rendering
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        //glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -59,16 +148,14 @@ int main()
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
+    // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
