@@ -66,10 +66,19 @@ namespace MainWindow {
 
             // ejemplo que importa un modelo al vector de modelos del estado del programa para luego renderizar todos los modelos del vector de modelos
             // usa shader textColor
-            ImportMeshToStateFull("triangleplusone", true);
-            unsigned int myTexture = render_state::RenderModelsVector(prog_state::stateModels);
-            RenderTexture(myTexture);
+            //ImportMeshToStateFull("triangleplusone", true);
+            //unsigned int myTexture = render_state::RenderModelsVector(prog_state::stateModels);
+            //RenderTexture(myTexture);
 
+            // Metodo que renderiza los modelos del arreglo de modelos global
+            vector<Model> modelsToRender = prog_state::stateModels;
+            if (prog_input::isDrawing) {
+                //std::cout << "progam is drawing" << std::endl;
+                modelsToRender.push_back(prog_state::tmpModel);
+            }
+
+            unsigned int mainTexture = render_state::RenderModelsVector(modelsToRender);
+            render_state::RenderTexture(mainTexture);
         }
         ImGui::End();
     }

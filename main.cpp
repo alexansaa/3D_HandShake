@@ -33,6 +33,7 @@ Model import_export::model;
 
 // model state
 vector<Model> prog_state::stateModels;
+Model prog_state::tmpModel;
 
 // constants defintion
 extern const char* prog_state::colorVS = "./Shaders/1.model_loading.vs";

@@ -1,9 +1,20 @@
 #include "main.h"
 #include "inputAdd.h"
 #include "Renderizador.h"
-#include "main.h"
 
-unsigned int render_state::RenderModelsVector(vector<Model> stateModel) {
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
+
+#include "inputAdd.h"
+
+#include <cmath>
+
+vector<SimpleVertex> render_state::inputModelVertices;
+vector<unsigned int> render_state::inputModelIndexes;
+aiColor3D render_state::inputModelColor(0.3f,0.7f,0.5f);
+
+unsigned int render_state::RenderModelsVector(vector<Model> modelArray) {
     // Configuraciones de renderizado
     // ----------------------------------------------------
     // Create a texture for rendering
@@ -38,7 +49,7 @@ unsigned int render_state::RenderModelsVector(vector<Model> stateModel) {
     }
     else
     {
-        std::cout << "TODO BIEN" << std::endl;
+        //std::cout << "RenderModelsVector Texture is OK!" << std::endl;
     }
 
     // don't forget to enable shader before setting uniforms
@@ -60,12 +71,89 @@ unsigned int render_state::RenderModelsVector(vector<Model> stateModel) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // renderizamos modelos sobre textura
-    for (int i = 0; i < prog_state::stateModels.size(); i++) {
-        prog_state::stateModels[i].DrawIntoTextureCustom(prog_state::renderShader);
+    //std::cout << "Number of models: " << modelArray.size() << std::endl;
+    for (int i = 0; i < modelArray.size(); i++) {
+        modelArray[i].DrawIntoTextureCustom(prog_state::renderShader);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 
     return texture;
+}
+void render_state::RenderTexture(unsigned int texture) {
+    //Al final si todo salio bien te quedas con una textura renderizada. en este caso "texture"
+    ImGui::BeginChild("GameRender");
+
+    //ImVec2 wsize = ImGui::GetContentRegionAvail();
+    ImVec2 wsize = ImGui::GetWindowSize();
+
+    ImGui::Image((ImTextureID)texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::EndChild();
+}
+
+// Se tiene que llamar dos veces a este metodo para que un ciclo de "dibujo" se complete:
+// 1) Setea booleado "isInputting" a true y al finalizar los llamados con true, o sea mientras realiza el dibujo,
+//          setea booleano a false pero se llama una vez mas para finalizar el mismo ciclo de dibujo con un false
+//          y resetea los estados
+void render_state::InputModelCreator() {
+    Model myModel = Model();
+    if (prog_input::isInputting) {
+        SimpleVertex imputVertex;
+        glm::vec3 tmpVec;
+        tmpVec.x = prog_input::intersectionPoint.x;
+        tmpVec.y = prog_input::intersectionPoint.y;
+        tmpVec.z = prog_input::intersectionPoint.z;
+        std::cout << "Point: " << tmpVec.x << "," << tmpVec.y << "," << tmpVec.z << std::endl;
+        imputVertex.Position = tmpVec;
+        render_state::inputModelVertices.push_back(imputVertex);
+
+        // manejo el indice de renderizacion
+        int inputVertexSize = render_state::inputModelVertices.size();
+        if (inputVertexSize == 3) {
+            render_state::inputModelIndexes.push_back(0);
+            render_state::inputModelIndexes.push_back(1);
+            render_state::inputModelIndexes.push_back(2);
+        } else if (inputVertexSize > 3) {
+            // Aqui podemos cambiar el algoritmo de seleccion de nodos para creacion de nuevos triangulos
+            // Se puede implementar una funcion que pushe los indices del vertex ingresado junto con los otros
+            // dos vertices mas cercanos, realizando una resta del nodo ingresado (en cada coordenada) menos cada
+            // nodo dentro del vector de nodos ya ingresados. Si se sigue la trazabilidad de los indices, se puede ingresar
+            // vertices que se encuentran mas cercanos al ingresado actualmente
+            unsigned int newIndex = render_state::inputModelIndexes.size();
+            render_state::inputModelIndexes.push_back(newIndex);
+            render_state::inputModelIndexes.push_back(newIndex - 2);
+            render_state::inputModelIndexes.push_back(newIndex - 1);
+        }
+    }
+    else
+    {
+        if (render_state::inputModelVertices.size() > 0) {
+            myModel.pushMesh(render_state::inputModelVertices, render_state::inputModelColor, render_state::inputModelIndexes);
+            std::cout << "Creando modelo" << std::endl;
+            prog_state::stateModels.push_back(myModel);
+            std::cout << "Pusheando modelo" << std::endl;
+        }
+        
+        //reseteo los estados
+        vector<unsigned int> newVectorIndex;
+        render_state::inputModelIndexes = newVectorIndex;
+        vector<SimpleVertex> newVectorVertex;
+        render_state::inputModelVertices = newVectorVertex;
+        std::cout << "Reseteo de variables" << std::endl;
+    }
+    // verifico espacio de vertices ingresados para poder renderizar o descartar
+    if (render_state::inputModelVertices.size() > 2) {
+        // preparo modelo
+        myModel.pushMesh(render_state::inputModelVertices, render_state::inputModelColor, render_state::inputModelIndexes);
+        std::cout << "Mesh pushed to render..." << std::endl;
+        // asigno a la variable global del Modelo "siendo dibujado"
+        prog_state::tmpModel = myModel;
+        prog_input::isDrawing = true;
+    }
+    else {
+        prog_input::isDrawing = false;
+        prog_state::tmpModel = myModel;
+    }
 }
 

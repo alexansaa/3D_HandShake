@@ -75,7 +75,6 @@ public:
     // Usa el shader TextColor
     void DrawIntoTextureCustom(Shader& shader)
     {
-        std::cout << "Meshes size: " + std::to_string(meshes.size()) << std::endl;
         for (unsigned int i = 0; i < meshes.size(); i++) {
             meshes[i].DrawIntoTextureCustom(shader);
         }

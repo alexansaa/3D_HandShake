@@ -2,14 +2,28 @@
 #include "inputAdd.h"
 #include "camera.h"
 #include <GLFW/glfw3.h>
+#include "Renderizador.h"
 
 // variable definitions
 bool prog_input::isDragging = false;
+bool prog_input::isInputting = false;
+bool prog_input::isDrawing = false;
 double prog_input::prevXpos, prog_input::prevYpos;
 unsigned int prog_input::SCR_WIDTH = 800;
 unsigned int prog_input::SCR_HEIGHT = 600;
 float prog_input::deltaTime = 0.0f;
 float prog_input::lastFrame = 0.0f;
+glm::vec3 prog_input::intersectionPoint;
+
+void prog_input::resetState() {
+    prog_input::isInputting = false;
+    prog_input::isDrawing = false;
+    prog_input::isDragging = false;
+    vector<unsigned int> newVectorIndex;
+    render_state::inputModelIndexes = newVectorIndex;
+    vector<SimpleVertex> newVectorVertex;
+    render_state::inputModelVertices = newVectorVertex;
+}
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
@@ -48,10 +62,10 @@ void prog_input::mouse_callback(GLFWwindow* window, double xposIn, double yposIn
         float distanceFromCamera = 10.0f; // Adjust this distance as needed
         //glm::vec3 cameraPosition = glm::vec3(cameraX, cameraY, cameraZ);
         glm::vec3 cameraPosition = prog_state::camera.Position;
-        glm::vec3 intersectionPoint = cameraPosition + rayDirection * distanceFromCamera;
+        prog_input::intersectionPoint = cameraPosition + rayDirection * distanceFromCamera;
 
         // Output the intersection point coordinates
-        std::cout << "Intersection point: (" << intersectionPoint.x << ", " << intersectionPoint.y << ", " << intersectionPoint.z << ")" << std::endl;
+        //std::cout << "Intersection point: (" << prog_input::intersectionPoint.x << ", " << prog_input::intersectionPoint.y << ", " << prog_input::intersectionPoint.z << ")" << std::endl;
     }
 }
 
@@ -66,7 +80,11 @@ void prog_input::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 void prog_input::mouse_click_callback(GLFWwindow* window, int mouseBtn, int btnAction, int modifierKeys) {
     switch (mouseBtn) {
     case GLFW_MOUSE_BUTTON_LEFT:
-        std::cout << "left";
+        if (btnAction == GLFW_PRESS) {
+            std::cout << "inputing start...!!!" << std::endl;
+            prog_input::isInputting = true;
+            render_state::InputModelCreator();
+        }
         break;
     case GLFW_MOUSE_BUTTON_RIGHT:
         if (btnAction == GLFW_PRESS) {
@@ -88,8 +106,16 @@ void prog_input::mouse_click_callback(GLFWwindow* window, int mouseBtn, int btnA
 // ---------------------------------------------------------------------------------------------------------
 void prog_input::processInput(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        //glfwSetWindowShouldClose(window, true);
+        prog_input::resetState();
+    }
+        
+    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+        prog_input::isInputting = false;
+        render_state::InputModelCreator();
+        std::cout << "Input has finnished!" << std::endl;
+    }
 
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         prog_state::camera.ProcessKeyboard(FORWARD, deltaTime);

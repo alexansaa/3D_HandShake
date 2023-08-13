@@ -212,6 +212,7 @@ public:
 
         // elemento dibujado
         glClear(GL_DEPTH_BUFFER_BIT);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 
         glm::vec4 myColorBlack(0.0f, 0.0f, 0.0f, 1.0f);
