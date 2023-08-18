@@ -1,5 +1,6 @@
 #include "Tools.h"
 #include <imgui/imgui.h>
+#include "./Globals.h"
 
 //#include "main.h"
 #include <iostream>
@@ -76,7 +77,7 @@ namespace GuiTools {
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("About")) {
-                if (ImGui::MenuItem("About Us")) 
+                if (ImGui::MenuItem("About Us"))
                 {
                     if (show_window_AboutUs)
                     {
@@ -119,9 +120,16 @@ namespace GuiTools {
         }
     }
     void GuiTools::ShowColorWindow(bool* p_open) {
-        if (*p_open) {
+        if (*p_open)
+        {
             ImGui::Begin("Color");
-            ImGui::Text("Esta es la ventana de Herramientas de Modelado");
+            ImGui::Text("Esta es la ventana de Herramientas de Color");
+
+            static ImVec4 color = globalBackgroundColor; // Inicializar con el valor global
+            // Utiliza la función ImGui::ColorEdit4 correctamente pasando la dirección de 'color'
+            ImGui::ColorEdit4("Selecciona un color", (float*)&color);
+            globalBackgroundColor = color;
+
             ImGui::End();
         }
     }

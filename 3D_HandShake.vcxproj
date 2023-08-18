@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Globals.cpp" />
     <ClCompile Include="impExp.cpp" />
     <ClCompile Include="inputAdd.cpp" />
     <ClCompile Include="Linking\Include\imgui\imgui.cpp" />
@@ -36,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="impExp.h" />
     <ClInclude Include="inputAdd.h" />
     <ClInclude Include="main.h" />

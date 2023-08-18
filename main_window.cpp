@@ -262,7 +262,7 @@ namespace MainWindow {
         // definimos shader
         //Shader ourShader("text.vs", "test.fs");
         //Shader ourShader("Shaders/7.4.camera.vs", "Shaders/7.4.camera.fs");
-        
+
         //ourShader.use();
         //ourShader.setInt("texture1", 0);
         //ourShader.setInt("texture2", 1);
@@ -331,8 +331,8 @@ namespace MainWindow {
         // first pass
         glEnable(GL_DEPTH_TEST);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
 
         // render boxes
 
@@ -445,8 +445,8 @@ namespace MainWindow {
         //bool useTexture = true;
         //bool useColor = false;
 
-        glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        //glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // renderizamos en textura
@@ -588,8 +588,8 @@ namespace MainWindow {
         myModel.pushMesh(myVertices, myColor, myIndexes);
 
         //glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-        glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        //glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
 
         // renderizamos en textura
         myModel.DrawIntoTextureCustom(prog_state::renderShader);
@@ -722,7 +722,7 @@ namespace MainWindow {
             cerr << mAiExporter.GetErrorString() << endl;
             std::cout << mAiExporter.GetErrorString() << std::endl;
         }
-            
+
         // in case of returnint the aiScene from another function, there should not be worries about dellocationg memmory as memory should me managed by c++
         // deleting the scene will also take care of the vertices, faces, meshes, materials, nodes, etc.
         //delete &myScene;
@@ -798,7 +798,7 @@ namespace MainWindow {
             prog_state::stateModels.push_back(myModel);
         }
 
-        
+
 
         //float textureMixRate = 0.8f;
 
@@ -822,7 +822,7 @@ namespace MainWindow {
         if (prog_state::stateModels.size() < 1) {
             prog_state::stateModels.push_back(import_export::model);
         }
-        
+
     }
 
     // funcion usada para renderizar una textura sobre ambiente 2D de Dear Imgui

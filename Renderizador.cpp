@@ -9,10 +9,11 @@
 #include "inputAdd.h"
 
 #include <cmath>
+#include "Globals.h"
 
 vector<SimpleVertex> render_state::inputModelVertices;
 vector<unsigned int> render_state::inputModelIndexes;
-aiColor3D render_state::inputModelColor(0.3f,0.7f,0.5f);
+aiColor3D render_state::inputModelColor(0.3f, 0.7f, 0.5f);
 
 unsigned int render_state::RenderModelsVector(vector<Model> modelArray) {
     // Configuraciones de renderizado
@@ -66,8 +67,8 @@ unsigned int render_state::RenderModelsVector(vector<Model> modelArray) {
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
     prog_state::renderShader.setMat4("model", model);
-
-    glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+    glClearColor(globalBackgroundColor.x, globalBackgroundColor.y, globalBackgroundColor.z, globalBackgroundColor.w); //color de fondo
+    //glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // renderizamos modelos sobre textura
@@ -134,7 +135,7 @@ void render_state::InputModelCreator() {
             prog_state::stateModels.push_back(myModel);
             std::cout << "Pusheando modelo" << std::endl;
         }
-        
+
         //reseteo los estados
         vector<unsigned int> newVectorIndex;
         render_state::inputModelIndexes = newVectorIndex;
@@ -156,4 +157,3 @@ void render_state::InputModelCreator() {
         prog_state::tmpModel = myModel;
     }
 }
-
