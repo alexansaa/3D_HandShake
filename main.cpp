@@ -27,6 +27,7 @@ Camera prog_state::camera(glm::vec3(cameraX, cameraY, cameraZ));
 
 // shader
 Shader prog_state::renderShader;
+Shader prog_state::pickingShader;
 
 // importer object
 Model import_export::model;
@@ -42,6 +43,8 @@ extern const char* prog_state::textureVS = "./Shaders/7.4.camera.vs";
 extern const char* prog_state::textureFS = "./Shaders/7.4.camera.fs";
 extern const char* prog_state::textColorVS = "./Shaders/test.vs";
 extern const char* prog_state::textColorFS = "./Shaders/test.fs";
+extern const char* prog_state::pickingVS = "./Shaders/picking.vs";
+extern const char* prog_state::pickingFS = "./Shaders/picking.fs";
 
 int main()
 {
@@ -101,6 +104,7 @@ int main()
     // Our state
     //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     prog_state::renderShader = Shader(prog_state::textColorVS, prog_state::textColorFS);
+    prog_state::pickingShader = Shader(prog_state::pickingVS, prog_state::pickingFS);
     //prog_state::renderShader = Shader(prog_state::colorVS, prog_state::colorFS);
 
     // render loop

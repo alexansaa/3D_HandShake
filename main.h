@@ -7,6 +7,7 @@
 namespace prog_state {
 	extern Camera camera;
 	extern Shader renderShader;
+	extern Shader pickingShader;
 	extern vector<Model> stateModels;
 	extern Model tmpModel;
 	extern const char* colorVS;
@@ -15,5 +16,7 @@ namespace prog_state {
 	extern const char* textureFS;
 	extern const char* textColorVS;
 	extern const char* textColorFS;
+	extern const char* pickingVS;
+	extern const char* pickingFS;
 }
 #endif

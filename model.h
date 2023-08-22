@@ -80,6 +80,15 @@ public:
         }
     }
 
+    // guarda el identificador del objeto en la informacion del frame buffer activado, de forma que se pueda
+    // usar esta informacio cuando el usuario hace click sobre la pantalla, e identificar el objeto que se encuentra seleccionando
+    // not working
+    void DrawObjectsIdPixel(Shader& shader, aiColor3D idColor) {
+        for (unsigned int i = 0; i < meshes.size(); i++) {
+            meshes[i].DrawObjectsIdPixel(shader, idColor);
+        }
+    }
+
     // Constituye una malla dados vertices de triangulos, indices, texturas (calcula las normales al plano)
     void pushMesh(vector<SimpleVertex> vertices, aiColor3D color, vector<unsigned int> indexes)
     {

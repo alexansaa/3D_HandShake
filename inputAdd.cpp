@@ -60,9 +60,8 @@ void prog_input::mouse_callback(GLFWwindow* window, double xposIn, double yposIn
 
         // Calculate the intersection point in world space
         float distanceFromCamera = 10.0f; // Adjust this distance as needed
-        //glm::vec3 cameraPosition = glm::vec3(cameraX, cameraY, cameraZ);
         glm::vec3 cameraPosition = prog_state::camera.Position;
-        prog_input::intersectionPoint = cameraPosition + rayDirection * distanceFromCamera;
+        prog_input::intersectionPoint = cameraPosition + rayDirection * distanceFromCamera; // obtenemos la posicion del mouse proyectado a la distancia fijada de la camara
 
         // Output the intersection point coordinates
         //std::cout << "Intersection point: (" << prog_input::intersectionPoint.x << ", " << prog_input::intersectionPoint.y << ", " << prog_input::intersectionPoint.z << ")" << std::endl;
@@ -81,9 +80,20 @@ void prog_input::mouse_click_callback(GLFWwindow* window, int mouseBtn, int btnA
     switch (mouseBtn) {
     case GLFW_MOUSE_BUTTON_LEFT:
         if (btnAction == GLFW_PRESS) {
-            std::cout << "inputing start...!!!" << std::endl;
-            prog_input::isInputting = true;
-            render_state::InputModelCreator();
+            // verifico si se seleciona un objeto o el simple fondo o un boton del menu Dear Imgui
+            // falta implementacion
+            //render_state::HoverOverModelIdentifier(prog_state::stateModels);
+
+            if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+                std::cout << "Rendering object info" << std::endl;
+                render_state::HoverOverModelIdentifier(prog_state::stateModels);
+            }
+            else {
+                // en caso de clickear sobre el fondo, activamos la opcion de creacion de nuevo modelo
+                std::cout << "inputing start...!!!" << std::endl;
+                prog_input::isInputting = true;
+                render_state::InputModelCreator();
+            }
         }
         break;
     case GLFW_MOUSE_BUTTON_RIGHT:

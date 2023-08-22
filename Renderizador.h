@@ -7,5 +7,6 @@ namespace render_state {
 	extern vector<SimpleVertex> inputModelVertices;
 	extern vector<unsigned int> inputModelIndexes;
 	extern aiColor3D inputModelColor;
+	void HoverOverModelIdentifier(vector<Model> stateModels);
 }
 #endif
