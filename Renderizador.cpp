@@ -10,6 +10,8 @@
 
 #include <cmath>
 #include "Globals.h"
+#include <iostream>
+#include <string>
 
 vector<SimpleVertex> render_state::inputModelVertices;
 vector<unsigned int> render_state::inputModelIndexes;
@@ -112,19 +114,21 @@ void render_state::InputModelCreator() {
         // manejo el indice de renderizacion
         int inputVertexSize = render_state::inputModelVertices.size();
         if (inputVertexSize == 3) {
-            render_state::inputModelIndexes.push_back(0);
-            render_state::inputModelIndexes.push_back(1);
             render_state::inputModelIndexes.push_back(2);
+            render_state::inputModelIndexes.push_back(1);
+            render_state::inputModelIndexes.push_back(0);
         } else if (inputVertexSize > 3) {
             // Aqui podemos cambiar el algoritmo de seleccion de nodos para creacion de nuevos triangulos
             // Se puede implementar una funcion que pushe los indices del vertex ingresado junto con los otros
             // dos vertices mas cercanos, realizando una resta del nodo ingresado (en cada coordenada) menos cada
             // nodo dentro del vector de nodos ya ingresados. Si se sigue la trazabilidad de los indices, se puede ingresar
             // vertices que se encuentran mas cercanos al ingresado actualmente
-            unsigned int newIndex = render_state::inputModelIndexes.size();
-            render_state::inputModelIndexes.push_back(newIndex);
+            unsigned int newIndex = render_state::inputModelVertices.size();
+            render_state::inputModelIndexes.push_back(newIndex -1);
             render_state::inputModelIndexes.push_back(newIndex - 2);
-            render_state::inputModelIndexes.push_back(newIndex - 1);
+            render_state::inputModelIndexes.push_back(newIndex - 3);
+            
+            
         }
     }
     else
@@ -145,6 +149,23 @@ void render_state::InputModelCreator() {
     }
     // verifico espacio de vertices ingresados para poder renderizar o descartar
     if (render_state::inputModelVertices.size() > 2) {
+        for (int i = 0; i < render_state::inputModelVertices.size(); i++) {
+            std::cout << "Vertice " << i <<
+                ": x=" << render_state::inputModelVertices[i].Position.x << 
+                " y=" << render_state::inputModelVertices[i].Position.y << 
+                " z=" << render_state::inputModelVertices[i].Position.z << std::endl;
+        }
+
+        for (int j = 0; j < render_state::inputModelIndexes.size(); j++) {
+            std::cout << "Indices " << j <<
+                ": v1=" << render_state::inputModelIndexes[j] <<
+                " v2=" << render_state::inputModelIndexes[j + 1] <<
+                " v3=" << render_state::inputModelIndexes[j + 2] << std::endl;
+            j = j + 2;
+
+        }
+        
+
         // preparo modelo
         myModel.pushMesh(render_state::inputModelVertices, render_state::inputModelColor, render_state::inputModelIndexes);
         std::cout << "Mesh pushed to render..." << std::endl;
