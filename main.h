@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "model.h"
 #include <shader/shader.h>
+#include <imgui/imgui.h>
 
 namespace prog_state {
 	extern Camera camera;
@@ -18,5 +19,6 @@ namespace prog_state {
 	extern const char* textColorFS;
 	extern const char* pickingVS;
 	extern const char* pickingFS;
+	extern ImVec4 globalBackgroudColor;
 }
 #endif

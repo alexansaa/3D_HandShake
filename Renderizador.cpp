@@ -68,7 +68,11 @@ unsigned int render_state::RenderModelsVector(vector<Model> modelArray) {
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
     prog_state::renderShader.setMat4("model", model);
 
-    glClearColor(0.5f, 0.3f, 0.5f, 1.0f);
+    GLfloat red = prog_state::globalBackgroudColor.x;
+    GLfloat green = prog_state::globalBackgroudColor.y;
+    GLfloat blue = prog_state::globalBackgroudColor.z;
+    GLfloat alpha = prog_state::globalBackgroudColor.w;
+    glClearColor(red, green, blue, alpha);
     glClear(GL_COLOR_BUFFER_BIT);
     //glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);

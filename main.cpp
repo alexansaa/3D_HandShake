@@ -46,6 +46,9 @@ extern const char* prog_state::textColorFS = "./Shaders/test.fs";
 extern const char* prog_state::pickingVS = "./Shaders/picking.vs";
 extern const char* prog_state::pickingFS = "./Shaders/picking.fs";
 
+// global variables
+ImVec4 prog_state::globalBackgroudColor = ImVec4(0.5f, 0.3f, 0.5f, 1.0f);
+
 int main()
 {
     // glfw: initialize and configure
