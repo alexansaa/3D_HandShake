@@ -33,6 +33,7 @@ Shader prog_state::pickingShader;
 Model import_export::model;
 
 // model state
+unsigned int prog_state::mainTexture;
 vector<Model> prog_state::stateModels;
 Model prog_state::tmpModel;
 

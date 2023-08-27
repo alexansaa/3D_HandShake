@@ -84,6 +84,8 @@ unsigned int render_state::RenderModelsVector(vector<Model> modelArray) {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+    glDeleteFramebuffers(1, &framebuffer);
+    glDeleteRenderbuffers(1, &rbo);
 
     return texture;
 }

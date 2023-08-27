@@ -71,14 +71,17 @@ namespace MainWindow {
             //RenderTexture(myTexture);
 
             // Metodo que renderiza los modelos del arreglo de modelos global
+            glDeleteTextures(1, &prog_state::mainTexture);
             vector<Model> modelsToRender = prog_state::stateModels;
             if (prog_input::isDrawing) {
                 //std::cout << "progam is drawing" << std::endl;
                 modelsToRender.push_back(prog_state::tmpModel);
             }
 
-            unsigned int mainTexture = render_state::RenderModelsVector(modelsToRender);
-            render_state::RenderTexture(mainTexture);
+            prog_state::mainTexture = render_state::RenderModelsVector(modelsToRender);
+            render_state::RenderTexture(prog_state::mainTexture);
+            //glFinish();
+            
         }
         ImGui::End();
     }

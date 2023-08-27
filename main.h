@@ -6,6 +6,7 @@
 #include <imgui/imgui.h>
 
 namespace prog_state {
+	extern unsigned int mainTexture;
 	extern Camera camera;
 	extern Shader renderShader;
 	extern Shader pickingShader;

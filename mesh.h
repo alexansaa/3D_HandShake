@@ -208,6 +208,7 @@ public:
         shader.setVec4("uColor", myColor);
 
         glBindVertexArray(VAO);
+        glEnable(GL_DEPTH_TEST);
         glEnableVertexAttribArray(0);
 
         // elemento dibujado
@@ -217,7 +218,7 @@ public:
 
         glm::vec4 myColorBlack(0.0f, 0.0f, 0.0f, 1.0f);
         shader.setVec4("uColor", myColorBlack);
-        glDisable(GL_CULL_FACE);
+        //glDisable(GL_CULL_FACE);
         glLineWidth(5.0f);
         glDrawElements(GL_LINE_LOOP, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
         glLineWidth(1.0f);
@@ -334,7 +335,7 @@ private:
         // vertex texture coords
         //glEnableVertexAttribArray(1);
         //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*)offsetof(SimpleVertex, TexCoords));
-        glDisableVertexAttribArray(0);
+        //glDisableVertexAttribArray(0);
         glBindVertexArray(0);
     }
 
