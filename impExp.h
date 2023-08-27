@@ -3,5 +3,6 @@
 namespace import_export {
 	extern Model model;
 	void Importation(const char* modelObjPath, bool processCustom);
+	void Exportation(Model myModel, char* myName);
 }
 #endif
