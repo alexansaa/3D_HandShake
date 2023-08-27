@@ -215,6 +215,7 @@ public:
         //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 
+        //linea de division para triangulos
         glm::vec4 myColorBlack(0.0f, 0.0f, 0.0f, 1.0f);
         shader.setVec4("uColor", myColorBlack);
         glDisable(GL_CULL_FACE);
