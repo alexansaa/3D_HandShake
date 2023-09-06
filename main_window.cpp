@@ -81,6 +81,32 @@ namespace MainWindow {
             render_state::RenderTexture(mainTexture);
         }
         ImGui::End();
+
+        // Ventana Lateral
+        // ------------------------------------------------------------------
+
+        // Establecer posición y tamaño para la ventana lateral
+        ImVec2 fixedSize(300.0f, viewport->Size.y);               // Tamaño fijo en 'y' para llenar la pantalla verticalmente
+        ImVec2 fixedPos(viewport->Size.x - fixedSize.x, 0.0f);    // Posición a la derecha
+
+        // Crear la ventana lateral
+        ImGui::SetNextWindowPos(fixedPos, ImGuiCond_Always);      // ImGuiCond_Always asegura que la ventana siempre tenga la posición y el tamaño fijos
+        ImGui::SetNextWindowSize(fixedSize, ImGuiCond_Always);
+
+        // texto con mismo color de objeto dibujado
+        aiColor3D objectColor = render_state::inputModelColor;
+        ImVec4 textColor(objectColor.r, objectColor.g, objectColor.b, 1.0f);
+
+        if (ImGui::Begin("Object Information", &full_size_open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
+            // Vértices
+            for (int i = 0; i < render_state::inputModelVertices.size(); i++) {
+                ImGui::TextColored(textColor, "Vertex %d: x=%.2f\ty=%.2f\tz=%.2f", i,
+                    render_state::inputModelVertices[i].Position.x,
+                    render_state::inputModelVertices[i].Position.y,
+                    render_state::inputModelVertices[i].Position.z);
+            }
+        }
+        ImGui::End();
     }
 
     void ShowCanvas() {
