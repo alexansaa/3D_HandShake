@@ -66,7 +66,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT, "Paint 3D", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
