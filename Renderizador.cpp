@@ -129,8 +129,8 @@ void render_state::InputModelCreator() {
             // dos vertices mas cercanos, realizando una resta del nodo ingresado (en cada coordenada) menos cada
             // nodo dentro del vector de nodos ya ingresados. Si se sigue la trazabilidad de los indices, se puede ingresar
             // vertices que se encuentran mas cercanos al ingresado actualmente
-            unsigned int newIndex = render_state::inputModelIndexes.size();
-            render_state::inputModelIndexes.push_back(newIndex);
+            unsigned int newIndex = render_state::inputModelVertices.size();
+            render_state::inputModelIndexes.push_back(0);
             render_state::inputModelIndexes.push_back(newIndex - 2);
             render_state::inputModelIndexes.push_back(newIndex - 1);
         }

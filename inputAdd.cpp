@@ -84,15 +84,13 @@ void prog_input::mouse_click_callback(GLFWwindow* window, int mouseBtn, int btnA
             // falta implementacion
             //render_state::HoverOverModelIdentifier(prog_state::stateModels);
 
-            if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-                std::cout << "Rendering object info" << std::endl;
-                render_state::HoverOverModelIdentifier(prog_state::stateModels);
-            }
-            else {
-                // en caso de clickear sobre el fondo, activamos la opcion de creacion de nuevo modelo
-                std::cout << "inputing start...!!!" << std::endl;
-                prog_input::isInputting = true;
+            if (prog_input::isInputting) {
+                std::cout << "inputing..." << std::endl;
                 render_state::InputModelCreator();
+            }
+            else 
+            {
+                std::cout << "not inputing..." << std::endl;
             }
         }
         break;
@@ -122,7 +120,6 @@ void prog_input::processInput(GLFWwindow* window)
     }
         
     if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-        prog_input::isInputting = false;
         render_state::InputModelCreator();
         std::cout << "Input has finnished!" << std::endl;
     }
@@ -139,4 +136,12 @@ void prog_input::processInput(GLFWwindow* window)
         prog_state::camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         prog_state::camera.ProcessKeyboard(DOWN, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        prog_input::isInputting = true;
+    }
+    else
+    {
+        prog_input::isInputting = false;
+    }
+        
 }

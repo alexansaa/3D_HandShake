@@ -59,6 +59,11 @@ public:
             meshes[i].Draw(shader);
     }
 
+    aiColor3D myColor() {
+        aiColor3D tmpColor = meshes[0].color;
+        return tmpColor;
+    }
+
     // draws the model into a given texture, and thus all its meshes
     // 2d enviroments interoperability. Just to work with the correct shader and for full obj models with an mtl.
     // Usa el shader Color

@@ -17,9 +17,12 @@ void import_export::Exportation(Model myModel, char* myName) {
 	size_t totalLength = strlen(root) + strlen(myName) +  strlen(ext) + 1;
 
 	char* fullpath = new char[totalLength];
-	strcpy(fullpath, root);
-	strcpy(fullpath, myName);
-	strcpy(fullpath, ext);
+	strcpy_s(fullpath, sizeof(root), root);
+	strcpy_s(fullpath, sizeof(myName), myName);
+	strcpy_s(fullpath, sizeof(ext), ext);
+	//strcpy(fullpath, root);
+	//strcpy(fullpath, myName);
+	//strcpy(fullpath, ext);
 
 	if (mAiExporter.Export(&myExpScene, "obj", fullpath) != AI_SUCCESS) {
 		cerr << mAiExporter.GetErrorString() << endl;

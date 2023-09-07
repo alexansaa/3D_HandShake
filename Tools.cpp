@@ -2,6 +2,7 @@
 #include <imgui/imgui.h>
 
 #include "main.h"
+#include "Renderizador.h"
 #include <iostream>
 
 //static bool show_window_model = true;
@@ -18,7 +19,9 @@ namespace GuiTools {
     bool show_window_color = false;
     bool show_window_effects = false;
     bool show_window_shape = false;
+    bool show_window_objinfo = false;
     bool show_window_AboutUs = false;
+
     void GuiTools::BarraHerramientas()
     {
         if (ImGui::BeginMainMenuBar())
@@ -72,6 +75,14 @@ namespace GuiTools {
                     } else {
                         show_window_shape = true;
                     }
+                }
+                if (ImGui::MenuItem("Object Info")) {
+                    if (show_window_objinfo) {
+                        show_window_objinfo = false;
+                    } else {
+                        show_window_objinfo = true;
+                    }
+                    ShowObjinfoWindow(&show_window_objinfo);
                 }
                 ImGui::EndMenu();
             }
@@ -155,6 +166,26 @@ namespace GuiTools {
             ImGui::Text("Johanna Arias");
             ImGui::Text("Kleber Saavedra");
             ImGui::Text("Quito, 25 junio 2023");
+            ImGui::End();
+        }
+    }
+
+    void GuiTools::ShowObjinfoWindow(bool* p_open) {
+        if (*p_open) {
+            ImGui::Begin("Object Info");
+            for (int i = 0; i < prog_state::stateModels.size(); i++) {
+                Model myModel = prog_state::stateModels[i];
+                aiColor3D tmpColor = myModel.myColor();
+                ImVec4 textColor(tmpColor.r, tmpColor.g, tmpColor.b, 1.0f);
+                //std::cout << myModel.meshes[0].simpleVertices.size() << std::endl;
+                Mesh tmpMesh = myModel.meshes[0];
+                int vertSize = tmpMesh.vertices.size();
+                ImGui::TextColored(textColor, "Model %d; Num_Vertex %d",i,vertSize);
+                /*ImGui::TextColored(textColor, "Model %d: x=%.2f\ty=%.2f\tz=%.2f", i,
+                x_pos,
+                y_pos,
+                z_pos);*/
+            }
             ImGui::End();
         }
     }
