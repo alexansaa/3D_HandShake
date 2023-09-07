@@ -115,6 +115,10 @@ public:
         glActiveTexture(GL_TEXTURE0);
     }
 
+    void setColor(aiColor3D newColor) {
+        this->color = newColor;
+    }
+
     // render the mesh into a texture, for 2d compatibility
     // la textura debe estar configurada y anclada antes de haber llamado a esta funcion
     // el frame buffer debe ser "pintado" (clear color bit) antes de llamar a esta funcion

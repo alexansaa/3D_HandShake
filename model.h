@@ -64,6 +64,12 @@ public:
         return tmpColor;
     }
 
+    void myColor(aiColor3D newColor) {
+        meshes[0].setColor(newColor);
+        //meshes[0].color = newColor;
+        //std::cout << "new red: " << 
+    }
+
     // draws the model into a given texture, and thus all its meshes
     // 2d enviroments interoperability. Just to work with the correct shader and for full obj models with an mtl.
     // Usa el shader Color

@@ -20,7 +20,10 @@ namespace GuiTools {
     bool show_window_effects = false;
     bool show_window_shape = false;
     bool show_window_objinfo = false;
+    bool show_window_objinfo_colorSelect = false;
     bool show_window_AboutUs = false;
+
+    int selectedModelIndex = -1;
 
     void GuiTools::BarraHerramientas()
     {
@@ -82,7 +85,7 @@ namespace GuiTools {
                     } else {
                         show_window_objinfo = true;
                     }
-                    ShowObjinfoWindow(&show_window_objinfo);
+                    ShowObjinfoWindow(&show_window_objinfo, &show_window_objinfo_colorSelect);
                 }
                 ImGui::EndMenu();
             }
@@ -170,21 +173,66 @@ namespace GuiTools {
         }
     }
 
-    void GuiTools::ShowObjinfoWindow(bool* p_open) {
+    void GuiTools::ShowObjinfoWindow(bool* p_open, bool* c_open) {
         if (*p_open) {
-            ImGui::Begin("Object Info");
+            ImGui::Begin("Object Info", p_open);
             for (int i = 0; i < prog_state::stateModels.size(); i++) {
-                Model myModel = prog_state::stateModels[i];
+                Model &myModel = prog_state::stateModels[i];
                 aiColor3D tmpColor = myModel.myColor();
                 ImVec4 textColor(tmpColor.r, tmpColor.g, tmpColor.b, 1.0f);
                 //std::cout << myModel.meshes[0].simpleVertices.size() << std::endl;
                 Mesh tmpMesh = myModel.meshes[0];
-                int vertSize = tmpMesh.vertices.size();
-                ImGui::TextColored(textColor, "Model %d; Num_Vertex %d",i,vertSize);
+                int vertSize = tmpMesh.simpleVertices.size();
+
+                std::string tmpTitle = "Model " + std::to_string(i) + "; Num_Vertex " + std::to_string(vertSize);
+                const char* titleChar = tmpTitle.c_str();
+
+                //std::cout << "formated title: " << tmpTitle << std::endl;
+                ImGuiStyle& style = ImGui::GetStyle();
+                style.Colors[ImGuiCol_Text] = textColor;
+
+                ImGui::PushID(i);
+
+                if (ImGui::Button("Color")) {
+                    show_window_objinfo_colorSelect = !show_window_objinfo_colorSelect;
+                    selectedModelIndex = i;
+                }
+
+                ImGui::PopID();
+                
+                ImGui::SameLine();
+                if (ImGui::CollapsingHeader(titleChar)) {
+                    for (int j = 0; j < vertSize; j++) {
+                        float x_pos = tmpMesh.simpleVertices[j].Position.x;
+                        float y_pos = tmpMesh.simpleVertices[j].Position.y;
+                        float z_pos = tmpMesh.simpleVertices[j].Position.z;
+                        std::string tmpVertex = "Vertex " + std::to_string(j) + " x:" + std::to_string(x_pos) + " y:" + std::to_string(y_pos) + " z:" + std::to_string(z_pos);
+                        const char* vertexChar = tmpVertex.c_str();
+                        ImGui::BulletText(vertexChar);
+                    }
+                }
+                
+                style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+                /*ImGui::End();*/
+
+                //CollapsingHeader
+                //ImGui::TextColored(textColor, "Model %d; Num_Vertex %d",i,vertSize);
                 /*ImGui::TextColored(textColor, "Model %d: x=%.2f\ty=%.2f\tz=%.2f", i,
                 x_pos,
                 y_pos,
                 z_pos);*/
+            }
+
+            if (*c_open && selectedModelIndex >= 0 && selectedModelIndex < prog_state::stateModels.size()) {
+                Model& selectedModel = prog_state::stateModels[selectedModelIndex];
+                aiColor3D someColor = selectedModel.myColor();
+
+                ImGui::Begin("Select color", c_open);
+                if (ImGui::ColorEdit3("Selecciona un color", (float*)&someColor)) {
+                    selectedModel.myColor(someColor);
+                }
+                ImGui::End();
             }
             ImGui::End();
         }

@@ -138,7 +138,7 @@ int main()
         GuiTools::ShowColorWindow(&GuiTools::show_window_color);
         GuiTools::ShowEffectsWindow(&GuiTools::show_window_effects);
         GuiTools::ShowShapeWindow(&GuiTools::show_window_shape);
-        GuiTools::ShowObjinfoWindow(&GuiTools::show_window_objinfo);
+        GuiTools::ShowObjinfoWindow(&GuiTools::show_window_objinfo, &GuiTools::show_window_objinfo_colorSelect);
         GuiTools::ShowAboutUsWindow(&GuiTools::show_window_AboutUs);
 
         // Rendering
