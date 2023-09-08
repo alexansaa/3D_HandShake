@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "Renderizador.h"
+#include "impExp.h"
 #include <iostream>
 
 //static bool show_window_model = true;
@@ -21,6 +22,7 @@ namespace GuiTools {
     bool show_window_shape = false;
     bool show_window_objinfo = false;
     bool show_window_objinfo_colorSelect = false;
+    bool show_window_objexp = false;
     bool show_window_AboutUs = false;
 
     int selectedModelIndex = -1;
@@ -46,8 +48,21 @@ namespace GuiTools {
             }
             if (ImGui::BeginMenu("Project"))
             {
-                if (ImGui::MenuItem("Import")) {}
-                if (ImGui::MenuItem("Export")) {}
+                if (ImGui::BeginMenu("Import")) {
+                    if (ImGui::MenuItem("Tetraedro")) {
+                        Model tmpModel = import_export::Tetraedro();
+                        import_export::Importation(tmpModel);
+                    }
+                    ImGui::EndMenu();
+                }
+                if (ImGui::MenuItem("Export")) {
+                    if (show_window_objexp) {
+                        show_window_objexp = false;
+                    } else {
+                        show_window_objexp = true;
+                    }
+                    ShowObjexpWindow(&show_window_objexp);
+                }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Tools")) {
@@ -234,6 +249,75 @@ namespace GuiTools {
                 }
                 ImGui::End();
             }
+            ImGui::End();
+        }
+    }
+
+    void GuiTools::ShowObjexpWindow(bool* p_open) {
+        if (*p_open) {
+            ImGui::Begin("Object Export", p_open);
+            for (int i = 0; i < prog_state::stateModels.size(); i++) {
+                Model& myModel = prog_state::stateModels[i];
+                aiColor3D tmpColor = myModel.myColor();
+                ImVec4 textColor(tmpColor.r, tmpColor.g, tmpColor.b, 1.0f);
+                //std::cout << myModel.meshes[0].simpleVertices.size() << std::endl;
+                Mesh tmpMesh = myModel.meshes[0];
+                int vertSize = tmpMesh.simpleVertices.size();
+
+                std::string tmpTitle = "Model " + std::to_string(i) + "; Num_Vertex " + std::to_string(vertSize);
+                const char* titleChar = tmpTitle.c_str();
+
+                //std::cout << "formated title: " << tmpTitle << std::endl;
+                ImGuiStyle& style = ImGui::GetStyle();
+                style.Colors[ImGuiCol_Text] = textColor;
+
+                ImGui::PushID(i);
+
+                if (ImGui::Button("Export")) {
+                    selectedModelIndex = i;
+                    Model toExport = prog_state::stateModels[i];
+                    std::cout << "exporting " << selectedModelIndex << std::endl;
+                    std::string toExpName = "Model" + std::to_string(i);
+                    import_export::Exportation(toExport, &toExpName[0]);
+                }
+
+                ImGui::PopID();
+
+                ImGui::SameLine();
+                ImGui::Text(titleChar);
+                /*if (ImGui::CollapsingHeader(titleChar)) {
+                    for (int j = 0; j < vertSize; j++) {
+                        float x_pos = tmpMesh.simpleVertices[j].Position.x;
+                        float y_pos = tmpMesh.simpleVertices[j].Position.y;
+                        float z_pos = tmpMesh.simpleVertices[j].Position.z;
+                        std::string tmpVertex = "Vertex " + std::to_string(j) + " x:" + std::to_string(x_pos) + " y:" + std::to_string(y_pos) + " z:" + std::to_string(z_pos);
+                        const char* vertexChar = tmpVertex.c_str();
+                        ImGui::BulletText(vertexChar);
+                    }
+                }*/
+
+                style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+                /*ImGui::End();*/
+
+                //CollapsingHeader
+                //ImGui::TextColored(textColor, "Model %d; Num_Vertex %d",i,vertSize);
+                /*ImGui::TextColored(textColor, "Model %d: x=%.2f\ty=%.2f\tz=%.2f", i,
+                x_pos,
+                y_pos,
+                z_pos);*/
+            }
+
+            //if (*c_open && selectedModelIndex >= 0 && selectedModelIndex < prog_state::stateModels.size()) {
+            //    Model& selectedModel = prog_state::stateModels[selectedModelIndex];
+            //    aiColor3D someColor = selectedModel.myColor();
+
+            //    ImGui::Begin("Select color", c_open);
+            //    if (ImGui::ColorEdit3("Selecciona un color", (float*)&someColor)) {
+            //        selectedModel.myColor(someColor);
+            //    }
+            //    ImGui::End();
+            //}
             ImGui::End();
         }
     }

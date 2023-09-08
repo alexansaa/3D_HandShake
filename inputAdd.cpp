@@ -3,11 +3,13 @@
 #include "camera.h"
 #include <GLFW/glfw3.h>
 #include "Renderizador.h"
+#include "impExp.h"
 
 // variable definitions
 bool prog_input::isDragging = false;
 bool prog_input::isInputting = false;
 bool prog_input::isDrawing = false;
+bool prog_input::isImporting = false;
 double prog_input::prevXpos, prog_input::prevYpos;
 unsigned int prog_input::SCR_WIDTH = 800;
 unsigned int prog_input::SCR_HEIGHT = 600;
@@ -19,6 +21,7 @@ void prog_input::resetState() {
     prog_input::isInputting = false;
     prog_input::isDrawing = false;
     prog_input::isDragging = false;
+    prog_input::isImporting = false;
     vector<unsigned int> newVectorIndex;
     render_state::inputModelIndexes = newVectorIndex;
     vector<SimpleVertex> newVectorVertex;
@@ -37,9 +40,7 @@ void prog_input::mouse_callback(GLFWwindow* window, double xposIn, double yposIn
 
         prog_input::prevXpos = xposIn;
         prog_input::prevYpos = yposIn;
-    }
-    else
-    {
+    } else {
         // normalizamos la posicion a [-1, 1]
         float nomrX = (2.0f * static_cast<float>(xposIn)) / prog_input::SCR_WIDTH - 1.0f;
         float normY = 1.0f - (2.0f * static_cast<float>(yposIn)) / prog_input::SCR_HEIGHT;
@@ -62,6 +63,11 @@ void prog_input::mouse_callback(GLFWwindow* window, double xposIn, double yposIn
         float distanceFromCamera = 10.0f; // Adjust this distance as needed
         glm::vec3 cameraPosition = prog_state::camera.Position;
         prog_input::intersectionPoint = cameraPosition + rayDirection * distanceFromCamera; // obtenemos la posicion del mouse proyectado a la distancia fijada de la camara
+
+        // actualizamo coordenadas de modelo importado
+        if (prog_input::isImporting) {
+            import_export::ImportationTraslation();
+        }
 
         // Output the intersection point coordinates
         //std::cout << "Intersection point: (" << prog_input::intersectionPoint.x << ", " << prog_input::intersectionPoint.y << ", " << prog_input::intersectionPoint.z << ")" << std::endl;
@@ -88,9 +94,10 @@ void prog_input::mouse_click_callback(GLFWwindow* window, int mouseBtn, int btnA
                 std::cout << "inputing..." << std::endl;
                 render_state::InputModelCreator();
             }
-            else 
-            {
-                std::cout << "not inputing..." << std::endl;
+
+            if (prog_input::isImporting) {
+                std::cout << "importing location selected..." << std::endl;
+                import_export::ImportationAcepted();
             }
         }
         break;
@@ -117,6 +124,7 @@ void prog_input::processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         //glfwSetWindowShouldClose(window, true);
         prog_input::resetState();
+        import_export::ImportationCanceled();
     }
         
     if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
@@ -145,3 +153,4 @@ void prog_input::processInput(GLFWwindow* window)
     }
         
 }
+

@@ -11,6 +11,7 @@ namespace prog_input {
 	extern bool isDragging;
 	extern bool isInputting;
 	extern bool isDrawing;
+	extern bool isImporting;
 	extern double prevXpos, prevYpos;
 	extern unsigned int SCR_WIDTH;
 	extern unsigned int SCR_HEIGHT;

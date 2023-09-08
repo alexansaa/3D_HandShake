@@ -1,10 +1,56 @@
 #include "impExp.h"
 #include <assimp/Exporter.hpp>
+#include "main.h"
 
 void import_export::Importation(const char* modelObjPath, bool processCustom) {
 	// importacion del modelo desde un obj que tien un mtl
 	Model tmpModel(modelObjPath, processCustom);
-	import_export::model = tmpModel;
+	prog_input::isImporting = true;
+	import_export::tmpModel = tmpModel;
+}
+
+void import_export::Importation(Model myModel) {
+	prog_input::isImporting = true;
+	import_export::tmpModel = myModel;
+}
+
+void import_export::ImportationAcepted() {
+	prog_input::isImporting = false;
+	prog_state::stateModels.push_back(import_export::model);
+}
+
+void import_export::ImportationCanceled() {
+	prog_input::isImporting = false;
+	Model emptyModel = Model();
+	import_export::tmpModel = emptyModel;
+	import_export::model = emptyModel;
+}
+
+void import_export::ImportationTraslation() {
+	glm::vec3 tmpVec;
+	tmpVec.x = prog_input::intersectionPoint.x;
+	tmpVec.y = prog_input::intersectionPoint.y;
+	tmpVec.z = prog_input::intersectionPoint.z;
+
+	vector<Mesh> importMeshes = import_export::tmpModel.meshes;
+	aiColor3D myColor = importMeshes[0].color;
+	vector<unsigned int> indices = importMeshes[0].indices;
+
+	vector<SimpleVertex> vertex;
+
+	for (int i = 0; i < importMeshes[0].simpleVertices.size(); i++) {
+		SimpleVertex tmpV;
+		glm::vec3 tmpN;
+		tmpN.x = importMeshes[0].simpleVertices[i].Position.x + tmpVec.x;
+		tmpN.y = importMeshes[0].simpleVertices[i].Position.y + tmpVec.y;
+		tmpN.z = importMeshes[0].simpleVertices[i].Position.z + tmpVec.z;
+		tmpV.Position = tmpN;
+		vertex.push_back(tmpV);
+	}
+
+	Model transModel = Model();
+	transModel.pushMesh(vertex, myColor, indices);
+	import_export::model = transModel;
 }
 
 void import_export::Exportation(Model myModel, char* myName) {

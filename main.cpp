@@ -31,6 +31,7 @@ Shader prog_state::pickingShader;
 
 // importer object
 Model import_export::model;
+Model import_export::tmpModel;
 
 // model state
 unsigned int prog_state::mainTexture;
@@ -139,6 +140,8 @@ int main()
         GuiTools::ShowEffectsWindow(&GuiTools::show_window_effects);
         GuiTools::ShowShapeWindow(&GuiTools::show_window_shape);
         GuiTools::ShowObjinfoWindow(&GuiTools::show_window_objinfo, &GuiTools::show_window_objinfo_colorSelect);
+        GuiTools::ShowObjexpWindow(&GuiTools::show_window_objexp);
+
         GuiTools::ShowAboutUsWindow(&GuiTools::show_window_AboutUs);
 
         // Rendering

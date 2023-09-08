@@ -56,8 +56,8 @@ namespace MainWindow {
             //ShowImport();                 // muestra la imagen renderizada importada del path al modelo obj con su respectivo mtl. Ocupa el Shader Color
             // --------------
             //ShowDraw();                   // muestra como renderizar en el ambiente 2D de Dear Imgui usando la nueva arquitectura. Con vertices customizados. Usa shader textcolor
-            ShowTetraedro();
-            ExportCustom();               // exporta una escena .obj junto con su .mtl a la carpeta de modelos 3d del programa. Usa Mesh para configurar la escena. Usa shader textcolor
+            //ShowTetraedro();
+            //ExportCustom();               // exporta una escena .obj junto con su .mtl a la carpeta de modelos 3d del programa. Usa Mesh para configurar la escena. Usa shader textcolor
 
             // ejemplo que agrega un Modelo al vector de modelos del estado del programa para luego renderizar todos los modelos del vector de modelos
             // usa shader textColor
@@ -71,17 +71,20 @@ namespace MainWindow {
             //unsigned int myTexture = render_state::RenderModelsVector(prog_state::stateModels);
             //RenderTexture(myTexture);
 
-            //// Metodo que renderiza los modelos del arreglo de modelos global
-            //glDeleteTextures(1, &prog_state::mainTexture);
-            //vector<Model> modelsToRender = prog_state::stateModels;
-            //if (prog_input::isDrawing) {
-            //    //std::cout << "progam is drawing" << std::endl;
-            //    modelsToRender.push_back(prog_state::tmpModel);
-            //}
+            // Metodo que renderiza los modelos del arreglo de modelos global
+            glDeleteTextures(1, &prog_state::mainTexture);
+            vector<Model> modelsToRender = prog_state::stateModels;
+            if (prog_input::isDrawing) {
+                //std::cout << "progam is drawing" << std::endl;
+                modelsToRender.push_back(prog_state::tmpModel);
+            }
+            if (prog_input::isImporting) {
+                modelsToRender.push_back(import_export::model);
+            }
 
-            //prog_state::mainTexture = render_state::RenderModelsVector(modelsToRender);
-            //render_state::RenderTexture(prog_state::mainTexture);
-            ////glFinish();
+            prog_state::mainTexture = render_state::RenderModelsVector(modelsToRender);
+            render_state::RenderTexture(prog_state::mainTexture);
+            //glFinish();
             
         }
         ImGui::End();
