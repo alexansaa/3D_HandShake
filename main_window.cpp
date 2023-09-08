@@ -58,7 +58,7 @@ namespace MainWindow {
             //ShowDraw();                   // muestra como renderizar en el ambiente 2D de Dear Imgui usando la nueva arquitectura. Con vertices customizados. Usa shader textcolor
             //ShowTetraedro();
             //ShowHexaedro();
-            ShowOctaedro();
+            //ShowOctaedro();
             //ShowIcosaedro();
             //ShowEsfera();
             //ShowDodecaedro();
@@ -692,6 +692,7 @@ namespace MainWindow {
 
         ImGui::EndChild();
     }
+
     void ShowHexaedro() {
         // Create a texture for rendering
         unsigned int texture;
@@ -913,9 +914,6 @@ namespace MainWindow {
 
         ImGui::EndChild();
     }
-
-    
-
 
     void ExportCustom() {
         // definimos nuestros vertices

@@ -2,6 +2,9 @@
 #include <assimp/Exporter.hpp>
 #include "main.h"
 
+#include <string>
+#include <iostream>
+
 void import_export::Importation(const char* modelObjPath, bool processCustom) {
 	// importacion del modelo desde un obj que tien un mtl
 	Model tmpModel(modelObjPath, processCustom);
@@ -55,27 +58,23 @@ void import_export::ImportationTraslation() {
 
 void import_export::Exportation(Model myModel, char* myName) {
 	aiScene myExpScene = myModel.GetExportScene();
+	std::cout << "exported scene getted" << std::endl;
 	Assimp::Exporter mAiExporter;
 
 	// realizamos concatenacion de path final
-	const char* root = "./modelo3d/custom/";
-	const char* ext = ".obj";
-	size_t totalLength = strlen(root) + strlen(myName) +  strlen(ext) + 1;
+	std::string myStrName = myName;
+	std::string fullpath = "./modelo3d/custom/" + myStrName + ".obj";
 
-	char* fullpath = new char[totalLength];
-	strcpy_s(fullpath, sizeof(root), root);
-	strcpy_s(fullpath, sizeof(myName), myName);
-	strcpy_s(fullpath, sizeof(ext), ext);
-	//strcpy(fullpath, root);
-	//strcpy(fullpath, myName);
-	//strcpy(fullpath, ext);
+	std::cout << "full path export: " << fullpath << std::endl;
 
 	if (mAiExporter.Export(&myExpScene, "obj", fullpath) != AI_SUCCESS) {
 		cerr << mAiExporter.GetErrorString() << endl;
 		std::cout << mAiExporter.GetErrorString() << std::endl;
 	}
 
-	delete[] fullpath;
+	std::cout << "Exported correct!" << std::endl;
+
+	//delete[] &fullpath;
 }
 
 Model import_export::Tetraedro() {
@@ -140,7 +139,6 @@ Model import_export::Tetraedro() {
 
 	return myModel;
 }
-
 
 Model import_export::Hexaedro() {
 
@@ -266,7 +264,6 @@ Model import_export::Hexaedro() {
 
 	return myModel;
 }
-
 
 Model import_export::Octaedro() {
 
