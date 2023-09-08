@@ -53,6 +53,21 @@ namespace GuiTools {
                         Model tmpModel = import_export::Tetraedro();
                         import_export::Importation(tmpModel);
                     }
+                    
+                    if (ImGui::MenuItem("Hexaedro")) {
+                        Model tmpModel = import_export::Hexaedro();
+                        import_export::Importation(tmpModel);
+                    }
+                    
+                    if (ImGui::MenuItem("Octaedro")) {
+                        Model tmpModel = import_export::Octaedro();
+                        import_export::Importation(tmpModel);
+                    }
+                    
+                    if (ImGui::MenuItem("Icosaedro")) {
+                        Model tmpModel = import_export::Icosaedro();
+                        import_export::Importation(tmpModel);
+                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem("Export")) {
