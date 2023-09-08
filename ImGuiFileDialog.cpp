@@ -37,7 +37,7 @@ SOFTWARE.
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
-#include "ImGuiFileDialog.h"
+#include <ImGuiFileDialog/ImGuiFileDialog.h>
 
 #ifdef __cplusplus
 
@@ -80,7 +80,7 @@ SOFTWARE.
 #ifdef USE_STD_FILESYSTEM
 #include <windows.h>
 #else
-#include "dirent/dirent.h"  // directly open the dirent file attached to this lib
+#include <dirent/dirent.h>  // directly open the dirent file attached to this lib
 #endif                      // USE_STD_FILESYSTEM
 #define PATH_SEP '\\'
 #ifndef PATH_MAX
@@ -97,8 +97,8 @@ SOFTWARE.
 #define PATH_SEP '/'
 #endif  // _IGFD_UNIX_
 
-#include "imgui.h"
-#include "imgui_internal.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #include <cstdlib>
 #include <algorithm>

@@ -9,6 +9,7 @@ namespace GuiTools {
 	extern bool show_window_shape;
 	extern bool show_window_objinfo;
 	extern bool show_window_objinfo_colorSelect;
+	extern bool show_window_objimport;
 	extern bool show_window_objexp;
 	extern bool show_window_AboutUs;
 
@@ -21,6 +22,8 @@ namespace GuiTools {
 	void ShowAboutUsWindow(bool* p_open);
 	void ShowObjinfoWindow(bool* p_open, bool* c_open);
 	void ShowObjexpWindow(bool* p_open);
+	void ShowObjimportWindow(bool* p_open);
+
 
 	void BarraHerramientas();
 	static void ShowMenuFile();

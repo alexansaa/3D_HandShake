@@ -1076,7 +1076,7 @@ ImGuiFontStudio is using also ImGuiFileDialog.
 #pragma region CONFIG FILE INCLUSION
 
 #ifndef CUSTOM_IMGUIFILEDIALOG_CONFIG
-#include "ImGuiFileDialogConfig.h"
+#include <ImGuiFileDialog/ImGuiFileDialog.h>
 #else  // CUSTOM_IMGUIFILEDIALOG_CONFIG
 #include CUSTOM_IMGUIFILEDIALOG_CONFIG
 #endif  // CUSTOM_IMGUIFILEDIALOG_CONFIG
@@ -1209,7 +1209,7 @@ struct IGFD_Thumbnail_Info {
 
 #pragma region Includes
 
-#include <imgui.h>
+#include <imgui/imgui.h>
 
 #include <set>
 #include <map>

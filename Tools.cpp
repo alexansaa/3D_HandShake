@@ -6,6 +6,10 @@
 #include "impExp.h"
 #include <iostream>
 
+#include <ImGuiFileDialog/ImGuiFileDialog.h>
+
+ImGuiFileDialog fileDialog;
+
 //static bool show_window_model = true;
 
 //// Helper to wire demo markers located in code to an interactive browser
@@ -23,6 +27,7 @@ namespace GuiTools {
     bool show_window_objinfo = false;
     bool show_window_objinfo_colorSelect = false;
     bool show_window_objexp = false;
+    bool show_window_objimport = false;
     bool show_window_AboutUs = false;
 
     int selectedModelIndex = -1;
@@ -68,8 +73,13 @@ namespace GuiTools {
                         Model tmpModel = import_export::Icosaedro();
                         import_export::Importation(tmpModel);
                     }
-                    if (ImGui::BeginMenu("Other...")) {
-                        ImGui::EndMenu();
+                    if (ImGui::MenuItem("Other...")) {
+                        if (show_window_objimport) {
+                            show_window_objimport = false;
+                        } else {
+                            show_window_objimport = true;
+                        }
+                        ShowObjimportWindow(&show_window_objimport);
                     }
                     ImGui::EndMenu();
                 }
@@ -337,6 +347,22 @@ namespace GuiTools {
             //    ImGui::End();
             //}
             ImGui::End();
+        }
+    }
+
+    void GuiTools::ShowObjimportWindow(bool* p_open) {
+        if (*p_open) {
+            //ImGui::Begin("Object Import", p_open);
+            fileDialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".cpp,.h,.hpp", ".");
+            if (fileDialog.Display("ChooseFileDlgKey")) {
+                if (fileDialog.IsOk()) {
+                    std::string filePathName = fileDialog.GetFilePathName();
+                    std::string filePath = fileDialog.GetCurrentPath();
+                    std::cout << "filepathName: " << filePathName << std::endl;
+                    std::cout << "filepath: " << filePath << std::endl;
+                }
+            }
+            //ImGui::End();
         }
     }
 }

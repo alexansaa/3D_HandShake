@@ -141,6 +141,7 @@ int main()
         GuiTools::ShowShapeWindow(&GuiTools::show_window_shape);
         GuiTools::ShowObjinfoWindow(&GuiTools::show_window_objinfo, &GuiTools::show_window_objinfo_colorSelect);
         GuiTools::ShowObjexpWindow(&GuiTools::show_window_objexp);
+        GuiTools::ShowObjimportWindow(&GuiTools::show_window_objimport);
 
         GuiTools::ShowAboutUsWindow(&GuiTools::show_window_AboutUs);
 
