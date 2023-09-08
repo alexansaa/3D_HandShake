@@ -10,5 +10,10 @@ namespace import_export {
 	void ImportationTraslation();
 	void Exportation(Model myModel, char* myName);
 	Model Tetraedro();
+	Model Hexaedro();
+	Model Octaedro();
+	Model Icosaedro();
+	Model CrearEsfera(float radio, int subdivisiones);
+	Model Dodecaedro();
 }
 #endif
