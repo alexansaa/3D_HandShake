@@ -352,17 +352,22 @@ namespace GuiTools {
 
     void GuiTools::ShowObjimportWindow(bool* p_open) {
         if (*p_open) {
-            //ImGui::Begin("Object Import", p_open);
-            fileDialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".cpp,.h,.hpp", ".");
+            fileDialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".obj", "./modelo3d/custom/");
             if (fileDialog.Display("ChooseFileDlgKey")) {
                 if (fileDialog.IsOk()) {
                     std::string filePathName = fileDialog.GetFilePathName();
                     std::string filePath = fileDialog.GetCurrentPath();
-                    std::cout << "filepathName: " << filePathName << std::endl;
-                    std::cout << "filepath: " << filePath << std::endl;
+                    //std::cout << "filepathName: " << filePathName << std::endl;
+                    //std::cout << "filepath: " << filePath << std::endl;
+
+                    const char* myPath = filePathName.c_str();
+
+                    import_export::Importation(myPath, true);
+
+                    //fileDialog.Close();
+                    show_window_objimport = false;
                 }
             }
-            //ImGui::End();
         }
     }
 }
