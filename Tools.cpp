@@ -53,6 +53,10 @@ namespace GuiTools {
                         Model tmpModel = import_export::Tetraedro();
                         import_export::Importation(tmpModel);
                     }
+                    //ImGui::EndMenu();
+                    if (ImGui::BeginMenu("Other...")) {
+                        ImGui::EndMenu();
+                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem("Export")) {
