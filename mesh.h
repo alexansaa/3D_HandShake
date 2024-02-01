@@ -115,6 +115,10 @@ public:
         glActiveTexture(GL_TEXTURE0);
     }
 
+    void setColor(aiColor3D newColor) {
+        this->color = newColor;
+    }
+
     // render the mesh into a texture, for 2d compatibility
     // la textura debe estar configurada y anclada antes de haber llamado a esta funcion
     // el frame buffer debe ser "pintado" (clear color bit) antes de llamar a esta funcion
@@ -209,20 +213,55 @@ public:
 
         glBindVertexArray(VAO);
         glEnable(GL_DEPTH_TEST);
+        glEnableVertexAttribArray(0);
 
         // elemento dibujado
         glClear(GL_DEPTH_BUFFER_BIT);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 
         glm::vec4 myColorBlack(0.0f, 0.0f, 0.0f, 1.0f);
         shader.setVec4("uColor", myColorBlack);
-        glDisable(GL_CULL_FACE);
+        //glDisable(GL_CULL_FACE);
         glLineWidth(5.0f);
         glDrawElements(GL_LINE_LOOP, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
         glLineWidth(1.0f);
 
+        glDisableVertexAttribArray(0);
         glBindVertexArray(0);
     }
+
+    // not working
+    void DrawObjectsIdPixel(Shader& shader, aiColor3D idColor) {
+        //setupMeshPicking();
+        //// aplico color especifico de la mesh
+        //float r_color = static_cast<float>(idColor.r);
+        //float g_color = static_cast<float>(idColor.g);
+        //float b_color = static_cast<float>(idColor.b);
+
+        //glm::vec4 myColor(r_color, g_color, b_color, 1.0f);
+
+        //shader.setVec4("PickingColor", myColor);
+
+        //glBindVertexArray(VAO);
+        //glEnableVertexAttribArray(0);
+        //glEnable(GL_DEPTH_TEST);
+        //glDepthFunc(GL_LESS);
+        //glEnable(GL_CULL_FACE);
+
+        //// elemento dibujado
+        //glClearDepth(0.0);
+        //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        ////glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+
+        //glBindVertexArray(0);
+        //glDisableVertexAttribArray(0);
+
+        //setupMeshCustom();
+    }
+
+
 
 
 private:
@@ -300,7 +339,28 @@ private:
         // vertex texture coords
         //glEnableVertexAttribArray(1);
         //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*)offsetof(SimpleVertex, TexCoords));
-        
+        //glDisableVertexAttribArray(0);
+        glBindVertexArray(0);
+    }
+
+    // not working
+    void setupMeshPicking()
+    {
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, simpleVertices.size() * sizeof(SimpleVertex), &simpleVertices[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*)0);
+
+        glDisableVertexAttribArray(0);
         glBindVertexArray(0);
     }
 };

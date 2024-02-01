@@ -9,6 +9,12 @@ namespace MainWindow {
 	void ShowTest();
 	void ShowImport();
 	void ShowDraw();
+	void ShowTetraedro();
+	void ShowHexaedro();
+	void ShowOctaedro();
+	void ShowIcosaedro();
+	void ShowEsfera();
+	void ShowDodecaedro();
 	void ExportCustom();
 	void AddMeshToStateFull();
 	void ImportMeshToStateFull(const char* modelName, bool processCustom);

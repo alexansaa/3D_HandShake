@@ -27,12 +27,16 @@ Camera prog_state::camera(glm::vec3(cameraX, cameraY, cameraZ));
 
 // shader
 Shader prog_state::renderShader;
+Shader prog_state::pickingShader;
 
 // importer object
 Model import_export::model;
+Model import_export::tmpModel;
 
 // model state
+unsigned int prog_state::mainTexture;
 vector<Model> prog_state::stateModels;
+Model prog_state::tmpModel;
 
 // constants defintion
 extern const char* prog_state::colorVS = "./Shaders/1.model_loading.vs";
@@ -41,6 +45,11 @@ extern const char* prog_state::textureVS = "./Shaders/7.4.camera.vs";
 extern const char* prog_state::textureFS = "./Shaders/7.4.camera.fs";
 extern const char* prog_state::textColorVS = "./Shaders/test.vs";
 extern const char* prog_state::textColorFS = "./Shaders/test.fs";
+extern const char* prog_state::pickingVS = "./Shaders/picking.vs";
+extern const char* prog_state::pickingFS = "./Shaders/picking.fs";
+
+// global variables
+ImVec4 prog_state::globalBackgroudColor = ImVec4(0.5f, 0.3f, 0.5f, 1.0f);
 
 int main()
 {
@@ -58,7 +67,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(prog_input::SCR_WIDTH, prog_input::SCR_HEIGHT, "Paint 3D", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -100,6 +109,7 @@ int main()
     // Our state
     //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     prog_state::renderShader = Shader(prog_state::textColorVS, prog_state::textColorFS);
+    prog_state::pickingShader = Shader(prog_state::pickingVS, prog_state::pickingFS);
     //prog_state::renderShader = Shader(prog_state::colorVS, prog_state::colorFS);
 
     // render loop
@@ -129,6 +139,10 @@ int main()
         GuiTools::ShowColorWindow(&GuiTools::show_window_color);
         GuiTools::ShowEffectsWindow(&GuiTools::show_window_effects);
         GuiTools::ShowShapeWindow(&GuiTools::show_window_shape);
+        GuiTools::ShowObjinfoWindow(&GuiTools::show_window_objinfo, &GuiTools::show_window_objinfo_colorSelect);
+        GuiTools::ShowObjexpWindow(&GuiTools::show_window_objexp);
+        GuiTools::ShowObjimportWindow(&GuiTools::show_window_objimport);
+
         GuiTools::ShowAboutUsWindow(&GuiTools::show_window_AboutUs);
 
         // Rendering

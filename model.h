@@ -59,6 +59,17 @@ public:
             meshes[i].Draw(shader);
     }
 
+    aiColor3D myColor() {
+        aiColor3D tmpColor = meshes[0].color;
+        return tmpColor;
+    }
+
+    void myColor(aiColor3D newColor) {
+        meshes[0].setColor(newColor);
+        //meshes[0].color = newColor;
+        //std::cout << "new red: " << 
+    }
+
     // draws the model into a given texture, and thus all its meshes
     // 2d enviroments interoperability. Just to work with the correct shader and for full obj models with an mtl.
     // Usa el shader Color
@@ -75,9 +86,17 @@ public:
     // Usa el shader TextColor
     void DrawIntoTextureCustom(Shader& shader)
     {
-        std::cout << "Meshes size: " + std::to_string(meshes.size()) << std::endl;
         for (unsigned int i = 0; i < meshes.size(); i++) {
             meshes[i].DrawIntoTextureCustom(shader);
+        }
+    }
+
+    // guarda el identificador del objeto en la informacion del frame buffer activado, de forma que se pueda
+    // usar esta informacio cuando el usuario hace click sobre la pantalla, e identificar el objeto que se encuentra seleccionando
+    // not working
+    void DrawObjectsIdPixel(Shader& shader, aiColor3D idColor) {
+        for (unsigned int i = 0; i < meshes.size(); i++) {
+            meshes[i].DrawObjectsIdPixel(shader, idColor);
         }
     }
 
