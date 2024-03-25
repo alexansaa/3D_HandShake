@@ -1,4 +1,4 @@
-## Copyright 2023, Macherki Nessrine & Alexander && EL MEHDI AHMIDOU
+## Copyright 2023, Alexander
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this Rails - Recipe App and associated documentation files, to deal in the Rails - Recipe App without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Rails - Recipe App, and to permit persons to whom the Rails - Recipe App is furnished to do so, subject to the following conditions:
 
