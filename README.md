@@ -11,8 +11,7 @@
   - [Prerequisites](#prerequisites)
   - [Install](#install)
   - [Usage](#usage)
-  - [Run tests](#run-tests)
-  - [Deployment](#triangular_flag_on_post-deployment)
+  - [Deployment](#deployment)
 - [👥 Authors](#authors)
 - [🔭 Future Features](#future-features)
 - [🤝 Contributing](#contributing)
@@ -22,11 +21,11 @@
 
 # 📖 [3D_PaintTool] <a name="about-project"></a>
 
-**[Recipe app]**
-With the 3D_PaintTool app you are able to draw 3D figures in space. Use your mouse and the arrow keys in order to move arround all the space of the app. Click around to create new shapes. Edit their colors and forms to create even better 3D figures. You can import and export other object into the space too!
+**[3D_PaintTool]**
+With the 3D_PaintTool app, you can draw 3D figures in space. Use your mouse and the arrow keys to move around the space of the app. Click around to create new shapes. Edit their colors and forms to create even better 3D figures. You can import and export other objects into the space too!
 
 3-dimensional drawing engine that includes camera rotation and translation at will
-using the A,S,D,Q,W,E keys. With right click and drag you can rotate the camera
+using the A, S, D, Q, W, and E keys. With right click and drag you can rotate the camera
 on the same axis. If you hold down R and click the left button, the program begins to take
 coordinates for a new figure.
 
@@ -44,7 +43,9 @@ Using the ESC button releases the program from any instructions it has entered.
   <summary>Client</summary>
   <ul>
     <li><a href="https://learn.microsoft.com/es-es/cpp/cpp/welcome-back-to-cpp-modern-cpp?view=msvc-170">C++</a></li>
-     <li><a href="https://www.opengl.org/">OpenGL</a></li>
+    <li><a href="https://www.opengl.org/">OpenGL</a></li>
+    <li><a href="https://www.glfw.org/">GLWF</a></li>
+    <li><a href="https://github.com/Dav1dde/glad">GLAD</a></li>
   </ul>
 </details>
 
@@ -71,10 +72,10 @@ To get a local copy up and running, follow these steps.
 
 ### Prerequisites
 
-In order to run this project you need:
+To run this project you need:
 
 - Visual Studio 2017
-- Install OpenGL on your local enviroment
+- Install OpenGL on your local environment
 
 ### Setup
 
@@ -89,15 +90,15 @@ Clone this repository to your desired folder:
 
 Install this project with:
 
-In order to use the program, the repository must be copied to a local folder (unzip or clone repository).
+To use the program, the repository must be copied to a local folder (unzip or clone repository).
 Once inside the folder, open the .sln file to open the project in Visual Studio. Here we are going to change one
-global configuration that could not be shared by repository:
-- Right click on the node with the project name shown in the project explorer (just below the root node)
-- In this menu we select the "properties" option
+global configuration that could not be shared by the repository:
+- Right-click on the node with the project name shown in the project explorer (just below the root node)
+- In this menu, we select the "Properties" option
 - On the screen that appears, we go to "Debugging"
-- Once here, make sure that the "Plataform" option located in the upper central part of the window is in the "All Platforms" option
-Usually it happens that no values ​​are shown, in that case select the "All Platforms" option again so that the values ​​appear
-- Then, we edit the "Enviroment" option with the value "PATH=%PATH%;$(ProjectDir)\Linking\Dll"
+- Once here, make sure that the "Platform" option located in the upper central part of the window is in the "All Platforms" option
+Usually, it happens that no values ​​are shown, in that case, select the "All Platforms" option again so that the values ​​appear
+- Then, we edit the "Environment" option with the value "PATH=%PATH%;$(ProjectDir)\Linking\Dll"
 - We accept everything and close pop-ups
 
 ### Usage
@@ -157,7 +158,7 @@ If you like this project, please give it a star on GitHub
 
 ## 🙏 Acknowledgments <a name="acknowledgements"></a>
 
-I would like to thank EPN - Escuela Politecnica Nacional for giving me the chance to study my second degree on Computer Science
+I would like to thank EPN - Escuela Politecnica Nacional for giving me the chance to study for my second degree in Computer Science
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
